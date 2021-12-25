@@ -56,33 +56,51 @@ class Dampf:
 
         # ====================================== SHOP PAGE ======================================
 
-        self.shop_page = Frame(master=self.mainframe, height=height - self.top_bar_height, bg="black")
-        self.sorting_bar = Frame(master=self.shop_page, height=20, bg="black")
+        shop_height = height - self.top_bar_height
+        self.shop_page = Frame(master=self.mainframe, height=shop_height, bg="black")
+        sorting_bar_height = 20
+        self.sorting_bar = Frame(master=self.shop_page, height=sorting_bar_height, bg="black")
 
         self.sort_by_price_label = ttk.Label(self.sorting_bar, text="Sortieren nach Preis", width=20,
                                              style="TB.TLabel")
         self.sort_by_price_label.bind("<Button-1>", self.sort_by_price)
 
+        self.sort_by_name_label = ttk.Label(self.sorting_bar, text="Sortieren nach Name", width=20,
+                                             style="TB.TLabel")
+        self.sort_by_name_label.bind("<Button-1>", self.sort_by_name)
+
+        # self.game_listings_frame = ttk.Frame(master=self.shop_page, height=shop_height - sorting_bar_height,
+        # bg="black")
+        # self.game_listings_frame = ttk.Frame(master=self.shop_page, height=shop_height - sorting_bar_height)
+        self.game_listings_frame = ScrollableFrame(container=self.shop_page, height=shop_height - sorting_bar_height,
+                                                   width=0.4*width)
+        self.game_listings_frame.pack_propagate(False)
+
+        # Je game listing jeweils noch Frame
+
+        # self.game_entries = []
+        # self.game_entry
+
     def open_shop(self, event):
-        if self.showing == "shop":
-            pass
-        else:
+        if self.showing != "shop":
+            # lib.grid_forget()
+            # login.grid_forget()
+
             self.shop_page.grid(row=1, column=0, sticky="w")
-            # self.lib_page.pack_forget()
-            # self.login_page.pack_forget()
 
             self.sorting_bar.grid_columnconfigure(2, minsize=width)
-            # self.sorting_bar.grid_rowconfigure(1)
             self.sorting_bar.grid(rowspan=1, columnspan=8, sticky="we")
-            self.sorting_bar.grid_columnconfigure(2, minsize=width)
 
             self.sort_by_price_label.grid(row=0, column=1, sticky="w")
             self.sort_by_price_label.configure(font=("arial", 12))
-            # lib.destroy()
-            # login.destroy()
-            self.sorting_bar.grid_columnconfigure(2, minsize=width)
-            self.sorting_bar.grid_rowconfigure(2)
-            self.sorting_bar.grid(rowspan=1, columnspan=8, sticky="we")
+
+            self.sort_by_name_label.grid(row=0, column=1, sticky="w")
+            self.sort_by_name_label.configure(font=("arial", 12))
+
+            for i in range(100):
+                ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample scrolling label").pack()
+
+            self.game_listings_frame.grid(row=1, column=0, rowspan=4, columnspan=4, sticky='nsew')
 
             print("Opening shop")
             self.showing = "shop"
@@ -96,7 +114,42 @@ class Dampf:
         print("Opening login screen")
 
     def sort_by_price(self, event):
-        pass
+        # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
+        print("Nach Preis Sortieren")
+        self.sort_by_price_label.grid_forget()
+        self.sort_by_name_label.grid()
+
+    def sort_by_name(self, event):
+        # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
+        print("Nach Name Sortieren")
+        self.sort_by_name_label.grid_forget()
+        self.sort_by_price_label.grid()
+
+
+    # def browse_game_listings(self):
+    #     # TODO: Mit event prüfen ob nach oben oder unten gescrollt wird?
+    #     pass
+
+class ScrollableFrame(ttk.Frame):
+    def __init__(self, container, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        canvas = tk.Canvas(self)
+        scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
+        self.scrollable_frame = ttk.Frame(canvas)
+
+        self.scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox("all")
+            )
+        )
+
+        canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
 
 
 def main():
@@ -110,10 +163,14 @@ def main():
     style.configure("TB.TLabel", foreground="white", background="black", anchor="center", font=('arial', 20))
     style.configure(root, background="black", foreground="white")
     dampf = Dampf(root, get_balance())
-    canvas = Canvas(root, width=width, height=height)
-    canvas.grid()
+    # canvas = Canvas(root, width=width, height=height)
+    # canvas.grid()
     # canvas.grid(columnspan=3)
     root.resizable(False, False)
+    win_size = str(width) + "x" + str(height)
+    root.geometry(win_size)
+    root.grid_propagate(0)
+
     root.mainloop()
 
 
