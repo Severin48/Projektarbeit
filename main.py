@@ -4,8 +4,9 @@ from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
 
-width = 720
-height = 512
+width = 1280 # 720
+height = 720 # 512
+small = height/20
 
 
 def get_balance():
@@ -25,7 +26,7 @@ class Dampf:
         self.mainframe.grid(rowspan=1, columnspan=8, sticky="we")
 
         # ====================================== TOP BAR ======================================
-        self.top_bar_height = 20
+        self.top_bar_height = small
         self.top_bar = Frame(master=self.mainframe, height=self.top_bar_height, bg="black")
         self.top_bar.grid_columnconfigure(2, minsize=width)
         self.top_bar.grid(rowspan=1, columnspan=8, sticky="we")  # sticky="we" so the bar starts on the left side
@@ -58,49 +59,68 @@ class Dampf:
 
         shop_height = height - self.top_bar_height
         self.shop_page = Frame(master=self.mainframe, height=shop_height, bg="black")
-        sorting_bar_height = 20
-        self.sorting_bar = Frame(master=self.shop_page, height=sorting_bar_height, bg="black")
+        sorting_bar_height = small
 
-        self.sort_by_price_label = ttk.Label(self.sorting_bar, text="Sortieren nach Preis", width=20,
+        self.sorting_bar_sh = Frame(master=self.shop_page, height=sorting_bar_height, bg="black")
+
+        self.sort_by_price_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Preis", width=20,
                                              style="TB.TLabel")
         self.sort_by_price_label.bind("<Button-1>", self.sort_by_price)
 
-        self.sort_by_name_label = ttk.Label(self.sorting_bar, text="Sortieren nach Name", width=20,
-                                             style="TB.TLabel")
-        self.sort_by_name_label.bind("<Button-1>", self.sort_by_name)
+        self.sort_shop_by_name_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Name", width=20,
+                                            style="TB.TLabel")
+        self.sort_shop_by_name_label.bind("<Button-1>", self.sort_shop_by_name)
 
         # self.game_listings_frame = ttk.Frame(master=self.shop_page, height=shop_height - sorting_bar_height,
         # bg="black")
         # self.game_listings_frame = ttk.Frame(master=self.shop_page, height=shop_height - sorting_bar_height)
-        self.game_listings_frame = ScrollableFrame(container=self.shop_page, height=shop_height - sorting_bar_height,
+        game_listings_height = shop_height - sorting_bar_height - self.top_bar_height
+        self.game_listings_frame = ScrollableFrame(container=self.shop_page, height=game_listings_height,
                                                    width=0.4*width)
-        self.game_listings_frame.pack_propagate(False)
+        # self.game_listings_frame.pack_propagate(False)
 
         # Je game listing jeweils noch Frame
 
         # self.game_entries = []
         # self.game_entry
 
+        # ====================================== LIB PAGE ======================================
+
+        self.lib_page = Frame(master=self.mainframe, height=shop_height, bg="black")
+
+        self.sorting_bar_lib = Frame(master=self.lib_page, height=sorting_bar_height, bg="black")
+
+        self.sort_by_playtime_label = ttk.Label(self.sorting_bar_lib, text="Sortieren nach Spielzeit", width=20,
+                                                style="TB.TLabel")
+        self.sort_by_playtime_label.bind("<Button-1>", self.sort_by_playtime)
+
+        self.sort_lib_by_name_label = ttk.Label(self.sorting_bar_lib, text="Sortieren nach Name", width=20,
+                                            style="TB.TLabel")
+        self.sort_lib_by_name_label.bind("<Button-1>", self.sort_lib_by_name)
+
+        self.game_library_frame = ScrollableFrame(container=self.lib_page, height=game_listings_height,
+                                                   width=0.4*width)
+
     def open_shop(self, event):
         if self.showing != "shop":
-            # lib.grid_forget()
+            self.lib_page.grid_forget()
             # login.grid_forget()
 
             self.shop_page.grid(row=1, column=0, sticky="w")
 
-            self.sorting_bar.grid_columnconfigure(2, minsize=width)
-            self.sorting_bar.grid(rowspan=1, columnspan=8, sticky="we")
+            self.sorting_bar_sh.grid_columnconfigure(2, minsize=width)
+            self.sorting_bar_sh.grid(rowspan=1, columnspan=8, sticky="we")
 
             self.sort_by_price_label.grid(row=0, column=1, sticky="w")
             self.sort_by_price_label.configure(font=("arial", 12))
 
-            self.sort_by_name_label.grid(row=0, column=1, sticky="w")
-            self.sort_by_name_label.configure(font=("arial", 12))
+            self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
+            self.sort_shop_by_name_label.configure(font=("arial", 12))
 
-            for i in range(100):
+            for i in range(60):
                 ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample scrolling label").pack()
 
-            self.game_listings_frame.grid(row=1, column=0, rowspan=4, columnspan=4, sticky='nsew')
+            self.game_listings_frame.grid(row=1, column=0, rowspan=1, columnspan=6, sticky='nsew')
 
             print("Opening shop")
             self.showing = "shop"
@@ -108,6 +128,23 @@ class Dampf:
     def open_lib(self, event):
         self.shop_page.grid_forget()
         self.showing = "lib"
+
+        self.lib_page.grid(row=1, column=0, sticky="w")
+
+        self.sorting_bar_lib.grid_columnconfigure(2, minsize=width)
+        self.sorting_bar_lib.grid(rowspan=1, columnspan=8, sticky="we")
+
+        self.sort_by_playtime_label.grid(row=0, column=1, sticky="w")
+        self.sort_by_playtime_label.configure(font=("arial", 12))
+
+        self.sort_lib_by_name_label.grid(row=0, column=1, sticky="w")
+        self.sort_lib_by_name_label.configure(font=("arial", 12))
+
+        for i in range(60):
+            ttk.Label(self.game_library_frame.scrollable_frame, text="Sample scrolling label").pack()
+
+        self.game_library_frame.grid(row=1, column=0, rowspan=4, columnspan=4, sticky='nsew')
+
         print("Opening library")
 
     def open_login(self, event):
@@ -117,13 +154,23 @@ class Dampf:
         # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
         print("Nach Preis Sortieren")
         self.sort_by_price_label.grid_forget()
-        self.sort_by_name_label.grid()
+        self.sort_shop_by_name_label.grid()
 
-    def sort_by_name(self, event):
+    def sort_shop_by_name(self, event):
         # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
         print("Nach Name Sortieren")
-        self.sort_by_name_label.grid_forget()
+        self.sort_shop_by_name_label.grid_forget()
         self.sort_by_price_label.grid()
+
+    def sort_lib_by_name(self, event):
+        # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
+        print("Nach Name Sortieren")
+        self.sort_lib_by_name_label.grid_forget()
+        self.sort_by_playtime_label.grid()
+
+    def sort_by_playtime(self, event):
+        self.sort_by_playtime_label.grid_forget()
+        self.sort_lib_by_name_label.grid()
 
 
     # def browse_game_listings(self):
