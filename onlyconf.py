@@ -22,10 +22,10 @@ class Dampf:
         master.title("Dampf")
         self.showing = ""
 
-        self.mainframe = Frame(master=self.master, bg="black")  # , width=width, height=height)
+        self.mainframe = Frame(master=self.master, bg="green")  # , width=width, height=height)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
-        self.mainframe.rowconfigure(1, weight=19)  # Shop Listing & Cart
-        # self.mainframe.columnconfigure(0, weight=1)
+        self.mainframe.rowconfigure(1, weight=29)  # Shop Listing & Cart
+        self.mainframe.columnconfigure(0, weight=1)
         self.mainframe.grid(row=0, column=0, sticky="WENS")
 
         top_bar_height = small
@@ -37,44 +37,74 @@ class Dampf:
         self.top_bar.grid_columnconfigure(3, weight=1)
         self.top_bar.grid_columnconfigure(4, weight=1)
         # self.top_bar.grid_rowconfigure(0, weight=1, height=top_bar_height)
-        self.top_bar.grid_rowconfigure(0, weight=1)  # TODO: Wie die Höhe?
-        self.top_bar.grid(row=0, column=0, columnspan=2, sticky="WENS")
+        self.top_bar.grid_rowconfigure(0, weight=1)
+        self.top_bar.grid(row=0, column=0, sticky="WENS")
         # self.top_bar.grid(row=0, column=0, columnspan=2, sticky="WENS")
         # TODO: Shop contents col=0, cart col=1 --> Analog bei Lib
 
         self.fr_shop_label = Frame(master=self.top_bar, bg="black")
-        self.fr_shop_label.grid(row=0, column=0, sticky="WENS", padx=5)
+        self.fr_shop_label.grid(row=0, column=0, sticky="W", padx=5)
         self.shop_label = ttk.Label(self.fr_shop_label, text="SHOP", style="TB.TLabel")
-        self.shop_label.grid(row=0, column=0, sticky="WENS", padx=5)
+        self.shop_label.grid(row=0, column=0, sticky="W", padx=5)
         self.shop_label.bind("<Button-1>", self.open_shop)
 
         self.fr_lib_label = Frame(master=self.top_bar, bg="black")
+        self.fr_lib_label.grid(row=0, column=1, sticky="W", padx=5)
         self.lib_label = ttk.Label(self.fr_lib_label, text="BIBLIOTHEK", style="TB.TLabel")
-        self.lib_label.grid(row=0, column=1, sticky="WENS", padx=5)
+        self.lib_label.grid(row=0, column=0, sticky="W", padx=5)
         self.lib_label.bind("<Button-1>", self.open_lib)
 
         self.fr_placeholder_label = Frame(master=self.top_bar, bg="black")
-        self.placeholder_label = ttk.Label(self.fr_placeholder_label, style="TB.TLabel", background="green")
-        self.placeholder_label.grid(row=0, column=2, sticky="WENS")
+        self.fr_placeholder_label.grid(row=0, column=2, sticky="WENS", padx=5)
+        self.placeholder_label = ttk.Label(self.fr_placeholder_label, style="TB.TLabel", background="black")
+        self.placeholder_label.grid(row=0, column=0, sticky="WENS")
 
         self.fr_profile_label = Frame(master=self.top_bar, bg="black")
+        self.fr_profile_label.grid(row=0, column=3, sticky="E", padx=5)
         self.profile_label = ttk.Label(self.fr_profile_label, text="S1mple")
-        self.profile_label.grid(row=0, column=3, sticky="WENS")
+        self.profile_label.grid(row=0, column=0, sticky="E")
 
         self.fr_balance_label = Frame(master=self.top_bar, bg="black")
+        self.fr_balance_label.grid(row=0, column=4, sticky="E", padx=5)
         self.balance_label = ttk.Label(self.fr_balance_label, text=str(balance) + "€")
-        self.balance_label.grid(row=0, column=4, sticky="WENS")
+        self.balance_label.grid(row=0, column=0, sticky="E")
 
+        # ====================================== SHOP PAGE ======================================
+
+        self.shop_page = Frame(master=self.mainframe, bg="black")
+        self.shop_page.columnconfigure(0, weight=7)
+        self.shop_page.columnconfigure(1, weight=3)
+        self.shop_page.rowconfigure(0, weight=1)
+        self.shop_page.rowconfigure(1, weight=29)
+
+        self.sorting_bar_sh = Frame(master=self.shop_page, bg="black")
+
+        self.game_listings_frame = ScrollableFrame(container=self.shop_page)
+
+        self.cart = Frame(master=self.shop_page, bg="blue")
+
+        self.sort_by_price_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Preis", width=20,
+                                             style="TB.TLabel")
+        self.sort_by_price_label.bind("<Button-1>", self.sort_by_price)
+
+        self.sort_shop_by_name_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Name", width=20,
+                                            style="TB.TLabel")
+        self.sort_shop_by_name_label.bind("<Button-1>", self.sort_shop_by_name)
+
+        self.open_shop(event=None)  # Show the shop on launch
 
     def open_shop(self, event):
-        if self.showing != "shop":
-            self.lib_page.grid_forget()
-            # login.grid_forget()
+        # if self.showing != "shop":
+            # self.lib_page.grid_forget()
+            # login.grid_forget() # TODO: Wieder aktivieren
 
         self.shop_page.grid(row=1, column=0, sticky="wens")
 
-        self.sorting_bar_sh.grid_columnconfigure(2)
-        self.sorting_bar_sh.grid(rowspan=1, columnspan=8, sticky="wens")
+        self.sorting_bar_sh.grid(row=0, column=0, sticky="wens")
+
+        self.game_listings_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
+
+        self.cart.grid(row=1, column=1, sticky="wens")
 
         self.sort_by_price_label.grid(row=0, column=1, sticky="w")
         self.sort_by_price_label.configure(font=("arial", 12))
@@ -85,9 +115,7 @@ class Dampf:
         for i in range(60):
             ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample shop label").pack()
 
-        self.game_listings_frame.grid(row=1, column=0, rowspan=1, columnspan=6, sticky='nsew')
-
-        print("Opening shop")
+        # print("Opening shop")
         self.showing = "shop"
 
     def open_lib(self, event):
