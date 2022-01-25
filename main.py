@@ -137,8 +137,8 @@ class Dampf:
                                                    width=0.4*width)
 
     def open_shop(self, event):
-        if self.showing != "shop":
-            self.lib_page.grid_forget()
+        # if self.showing != "shop":
+            # self.lib_page.grid_forget()
             # login.grid_forget()
 
         self.shop_page.grid(row=1, column=0, sticky="wens")

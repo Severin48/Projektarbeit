@@ -69,6 +69,31 @@ class Dampf:
         self.balance_label = ttk.Label(self.fr_balance_label, text=str(balance) + "€")
         self.balance_label.grid(row=0, column=0, sticky="E")
 
+        # ====================================== LIB PAGE ======================================
+
+        self.lib_page = Frame(master=self.mainframe, bg="black")
+        self.lib_page.columnconfigure(0, weight=7)
+        self.lib_page.columnconfigure(1, weight=3)
+        self.lib_page.rowconfigure(0, weight=1)
+        self.lib_page.rowconfigure(1, weight=29)
+
+        self.sorting_bar_lib = Frame(master=self.lib_page, bg="black")
+
+        self.info_tab = Frame(master=self.lib_page, bg="blue")
+
+        self.sort_by_playtime_label = ttk.Label(self.sorting_bar_lib, text="Sortieren nach Spielzeit", width=20,
+                                                style="TB.TLabel")
+        self.sort_by_playtime_label.bind("<Button-1>", self.sort_by_playtime)
+
+        self.sort_lib_by_name_label = ttk.Label(self.sorting_bar_lib, text="Sortieren nach Name", width=20,
+                                            style="TB.TLabel")
+        self.sort_lib_by_name_label.bind("<Button-1>", self.sort_lib_by_name)
+
+        self.game_library_frame = ScrollableFrame(container=self.lib_page)
+
+        for i in range(20):
+            ttk.Label(self.game_library_frame.scrollable_frame, text="Sample library label").pack()
+
         # ====================================== SHOP PAGE ======================================
 
         self.shop_page = Frame(master=self.mainframe, bg="black")
@@ -79,7 +104,10 @@ class Dampf:
 
         self.sorting_bar_sh = Frame(master=self.shop_page, bg="black")
 
-        self.game_listings_frame = ScrollableFrame(container=self.shop_page)
+        self.game_listings_frame = ScrollableFrame(container=self.shop_page) # TODO: Scrollable machen
+
+        for i in range(20):
+            ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample shop label").pack()
 
         self.cart = Frame(master=self.shop_page, bg="blue")
 
@@ -94,38 +122,36 @@ class Dampf:
         self.open_shop(event=None)  # Show the shop on launch
 
     def open_shop(self, event):
-        # if self.showing != "shop":
-            # self.lib_page.grid_forget()
-            # login.grid_forget() # TODO: Wieder aktivieren
+        if self.showing != "shop":
+            self.lib_page.grid_forget()
+            # login.grid_forget() # TODO: Login weg?
 
-        self.shop_page.grid(row=1, column=0, sticky="wens")
+            self.shop_page.grid(row=1, column=0, sticky="wens")
 
-        self.sorting_bar_sh.grid(row=0, column=0, sticky="wens")
+            self.sorting_bar_sh.grid(row=0, column=0, sticky="wens")
 
-        self.game_listings_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
+            self.game_listings_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
 
-        self.cart.grid(row=1, column=1, sticky="wens")
+            self.cart.grid(row=1, column=1, sticky="wens")
 
-        self.sort_by_price_label.grid(row=0, column=1, sticky="w")
-        self.sort_by_price_label.configure(font=("arial", 12))
+            self.sort_by_price_label.grid(row=0, column=1, sticky="w")
+            self.sort_by_price_label.configure(font=("arial", 12))
 
-        self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
-        self.sort_shop_by_name_label.configure(font=("arial", 12))
+            self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
+            self.sort_shop_by_name_label.configure(font=("arial", 12))
 
-        for i in range(60):
-            ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample shop label").pack()
-
-        # print("Opening shop")
-        self.showing = "shop"
+            # print("Opening shop")
+            self.showing = "shop"
 
     def open_lib(self, event):
         self.shop_page.grid_forget()
         self.showing = "lib"
 
-        self.lib_page.grid(row=1, column=0, sticky="w")
+        self.lib_page.grid(row=1, column=0, sticky="wens")
 
-        self.sorting_bar_lib.grid_columnconfigure(2, minsize=width)
-        self.sorting_bar_lib.grid(rowspan=1, columnspan=8, sticky="we")
+        self.sorting_bar_lib.grid(row=0, column=0, sticky="wens")
+
+        self.info_tab.grid(row=1, column=1, sticky="wens")
 
         self.sort_by_playtime_label.grid(row=0, column=1, sticky="w")
         self.sort_by_playtime_label.configure(font=("arial", 12))
@@ -133,10 +159,7 @@ class Dampf:
         self.sort_lib_by_name_label.grid(row=0, column=1, sticky="w")
         self.sort_lib_by_name_label.configure(font=("arial", 12))
 
-        for i in range(60):
-            ttk.Label(self.game_library_frame.scrollable_frame, text="Sample library label").pack()
-
-        self.game_library_frame.grid(row=1, column=0, rowspan=4, columnspan=4, sticky='nsew')
+        self.game_library_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
 
         print("Opening library")
 
