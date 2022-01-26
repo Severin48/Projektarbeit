@@ -31,43 +31,43 @@ class Dampf:
         top_bar_height = small
         self.top_bar = Frame(master=self.mainframe, bg="black")
         # self.top_bar.grid_columnconfigure(2, minsize=width)
-        self.top_bar.grid_columnconfigure(0, weight=2)
-        self.top_bar.grid_columnconfigure(1, weight=2)
-        self.top_bar.grid_columnconfigure(2, weight=14)
-        self.top_bar.grid_columnconfigure(3, weight=1)
-        self.top_bar.grid_columnconfigure(4, weight=1)
+        self.top_bar.columnconfigure(0, weight=2)
+        self.top_bar.columnconfigure(1, weight=2)
+        self.top_bar.columnconfigure(2, weight=14)
+        self.top_bar.columnconfigure(3, weight=1)
+        self.top_bar.columnconfigure(4, weight=1)
         # self.top_bar.grid_rowconfigure(0, weight=1, height=top_bar_height)
-        self.top_bar.grid_rowconfigure(0, weight=1)
+        self.top_bar.rowconfigure(0, weight=1)
         self.top_bar.grid(row=0, column=0, sticky="WENS")
         # self.top_bar.grid(row=0, column=0, columnspan=2, sticky="WENS")
         # TODO: Shop contents col=0, cart col=1 --> Analog bei Lib
 
         self.fr_shop_label = Frame(master=self.top_bar, bg="black")
-        self.fr_shop_label.grid(row=0, column=0, sticky="W", padx=5)
+        self.fr_shop_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
         self.shop_label = ttk.Label(self.fr_shop_label, text="SHOP", style="TB.TLabel")
-        self.shop_label.grid(row=0, column=0, sticky="W", padx=5)
+        self.shop_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
         self.shop_label.bind("<Button-1>", self.open_shop)
 
         self.fr_lib_label = Frame(master=self.top_bar, bg="black")
-        self.fr_lib_label.grid(row=0, column=1, sticky="W", padx=5)
+        self.fr_lib_label.grid(row=0, column=1, sticky="W", padx=5, pady=5)
         self.lib_label = ttk.Label(self.fr_lib_label, text="BIBLIOTHEK", style="TB.TLabel")
-        self.lib_label.grid(row=0, column=0, sticky="W", padx=5)
+        self.lib_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
         self.lib_label.bind("<Button-1>", self.open_lib)
 
         self.fr_placeholder_label = Frame(master=self.top_bar, bg="black")
-        self.fr_placeholder_label.grid(row=0, column=2, sticky="WENS", padx=5)
+        self.fr_placeholder_label.grid(row=0, column=2, sticky="WENS", padx=5, pady=5)
         self.placeholder_label = ttk.Label(self.fr_placeholder_label, style="TB.TLabel", background="black")
         self.placeholder_label.grid(row=0, column=0, sticky="WENS")
 
         self.fr_profile_label = Frame(master=self.top_bar, bg="black")
-        self.fr_profile_label.grid(row=0, column=3, sticky="E", padx=5)
+        self.fr_profile_label.grid(row=0, column=3, sticky="E", padx=5, pady=5)
         self.profile_label = ttk.Label(self.fr_profile_label, text="S1mple")
-        self.profile_label.grid(row=0, column=0, sticky="E")
+        self.profile_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
 
         self.fr_balance_label = Frame(master=self.top_bar, bg="black")
-        self.fr_balance_label.grid(row=0, column=4, sticky="E", padx=5)
+        self.fr_balance_label.grid(row=0, column=4, sticky="E", padx=5, pady=5)
         self.balance_label = ttk.Label(self.fr_balance_label, text=str(balance) + "€")
-        self.balance_label.grid(row=0, column=0, sticky="E")
+        self.balance_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
         self.balance_label.bind("<Button-1>", self.open_funds)
 
         # ====================================== LIB PAGE ======================================
@@ -173,7 +173,7 @@ class Dampf:
     def open_shop(self, event):
         if self.showing != "shop":
             self.lib_page.grid_forget()
-            self.funds_frame.grid_forget() # TODO: Kann von Funds nicht auf Shop klicken
+            self.funds_frame.grid_forget()
             # login.grid_forget() # TODO: Login weg?
 
             self.shop_page.grid(row=1, column=0, sticky="wens")
@@ -196,7 +196,6 @@ class Dampf:
     def open_lib(self, event):
         self.shop_page.grid_forget()
         self.funds_frame.grid_forget()
-        self.showing = "lib"
 
         self.lib_page.grid(row=1, column=0, sticky="wens")
 
@@ -212,7 +211,9 @@ class Dampf:
 
         self.game_library_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
 
-        print("Opening library")
+        self.showing = "lib"
+
+        # print("Opening library")
 
     def open_funds(self, event):
         self.shop_page.grid_forget()
@@ -236,6 +237,8 @@ class Dampf:
         self.add_twentyfive.grid(row=2, column=1, sticky="e", padx=10, pady=10)
         self.add_fifty.grid(row=3, column=1, sticky="e", padx=10, pady=10)
         self.add_hundred.grid(row=4, column=1, sticky="e", padx=10, pady=10)
+
+        self.showing = "funds"
 
     def add_funds(self, event, amount):
         # TODO: von Studierenden zu implementieren
