@@ -108,7 +108,7 @@ class Dampf:
         self.fr_add_fifty = Frame(master=self.funds_frame, bg="grey")
         self.fr_add_hundred = Frame(master=self.funds_frame, bg="yellow")
 
-        self.desc_five = ttk.Label(self.fr_add_five, text="5,--€\nMinimaler Aufladebetrag",
+        self.desc_five = ttk.Label(self.fr_add_five, text="5,--€", # \nMinimaler Aufladebetrag
                                    style="TB.TLabel")
         self.desc_five.configure(font=('arial', 14))
 
@@ -143,6 +143,12 @@ class Dampf:
         self.add_hundred = ttk.Label(self.fr_add_hundred, text="100,--€ Guthaben aufladen", style="TB.TLabel")
         self.add_hundred.bind("<Button-1>", lambda event, x=100: self.add_funds(event, x))
 
+        self.fr_balance_big = Frame(master=self.funds_frame, bg="darkred")
+        self.balance_big = ttk.Label(self.fr_balance_big, text="Aktuelles Guthaben", style="TB.TLabel")
+
+        self.balance_value_label = ttk.Label(self.fr_balance_big, text=str(get_balance()) + ",--€", style="TB.TLabel")
+        self.balance_value_label.configure(font=("arial", 12))
+
         # ====================================== SHOP PAGE ======================================
 
         self.shop_page = Frame(master=self.mainframe, bg="black")
@@ -153,7 +159,7 @@ class Dampf:
 
         self.sorting_bar_sh = Frame(master=self.shop_page, bg="black")
 
-        self.game_listings_frame = ScrollableFrame(container=self.shop_page) # TODO: Scrollable machen
+        self.game_listings_frame = ScrollableFrame(container=self.shop_page) # TODO: Scrollable mit mousewheel machen
 
         for i in range(20):
             ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample shop label").pack()
@@ -172,6 +178,11 @@ class Dampf:
 
     def open_shop(self, event):
         if self.showing != "shop":
+            self.shop_label.configure(font=("arial", 20, "bold"))
+            self.lib_label.configure(font=('arial', 20))
+            # self.top_bar.grid(row=0, column=0, rowspan=1, sticky="WENS")
+            # self.top_bar.grid_rowconfigure(rowspan=1)
+
             self.lib_page.grid_forget()
             self.funds_frame.grid_forget()
             # login.grid_forget() # TODO: Login weg?
@@ -196,6 +207,9 @@ class Dampf:
     def open_lib(self, event):
         self.shop_page.grid_forget()
         self.funds_frame.grid_forget()
+        self.lib_label.configure(font=("arial", 20, "bold"))
+        self.shop_label.configure(font=('arial', 20))
+        # self.top_bar.grid_rowconfigure(rowspan=1)
 
         self.lib_page.grid(row=1, column=0, sticky="wens")
 
@@ -218,25 +232,50 @@ class Dampf:
     def open_funds(self, event):
         self.shop_page.grid_forget()
         self.lib_page.grid_forget()
+        self.shop_label.configure(font=('arial', 20))
+        self.lib_label.configure(font=('arial', 20))
+        # self.top_bar.grid_rowconfigure(rowspan=2) # TODO: Top bar shouldn't resize when clicking on funds and back
 
         self.funds_frame.grid(row=1, column=0, sticky="wens")
-        self.fr_add_five.grid(row=0, column=0, padx=20, pady=20, sticky="wens")
-        self.fr_add_ten.grid(row=1, column=0, padx=20, pady=20, sticky="wens")
-        self.fr_add_twentyfive.grid(row=2, column=0, padx=20, pady=20, sticky="wens")
-        self.fr_add_fifty.grid(row=3, column=0, padx=20, pady=20, sticky="wens")
-        self.fr_add_hundred.grid(row=4, column=0, padx=20, pady=20, sticky="wens")
+        self.fr_add_five.grid(row=0, column=0, sticky="wens")
+        self.fr_add_ten.grid(row=1, column=0, sticky="wens")
+        self.fr_add_twentyfive.grid(row=2, column=0, sticky="wens")
+        self.fr_add_fifty.grid(row=3, column=0, sticky="wens")
+        self.fr_add_hundred.grid(row=4, column=0, sticky="wens")
 
-        self.desc_five.grid(row=0, column=0, sticky="w", padx=10, pady=10)
-        self.desc_ten.grid(row=0, column=0, sticky="w", padx=10, pady=10)
-        self.desc_twentyfive.grid(row=0, column=0, sticky="w", padx=10, pady=10)
-        self.desc_fifty.grid(row=0, column=0, sticky="w", padx=10, pady=10)
-        self.desc_hundred.grid(row=0, column=0, sticky="w", padx=10, pady=10)
+        self.desc_five.grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.desc_five.place(anchor="center", relx=.1, rely=.5)
+        self.desc_ten.grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.desc_ten.place(anchor="center", relx=.1, rely=.5)
+        self.desc_twentyfive.grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.desc_twentyfive.place(anchor="center", relx=.1, rely=.5)
+        self.desc_fifty.grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.desc_fifty.place(anchor="center", relx=.1, rely=.5)
+        self.desc_hundred.grid(row=0, column=0, sticky="w", padx=5, pady=5)
+        self.desc_hundred.place(anchor="center", relx=.1, rely=.5)
 
         self.add_five.grid(row=0, column=1, sticky="e", padx=10, pady=10)
+        self.add_five.place(anchor="center", relx=.75, rely=.5)
         self.add_ten.grid(row=1, column=1, sticky="e", padx=10, pady=10)
+        self.add_ten.place(anchor="center", relx=.75, rely=.5)
         self.add_twentyfive.grid(row=2, column=1, sticky="e", padx=10, pady=10)
+        self.add_twentyfive.place(anchor="center", relx=.75, rely=.5)
         self.add_fifty.grid(row=3, column=1, sticky="e", padx=10, pady=10)
+        self.add_fifty.place(anchor="center", relx=.75, rely=.5)
         self.add_hundred.grid(row=4, column=1, sticky="e", padx=10, pady=10)
+        self.add_hundred.place(anchor="center", relx=.75, rely=.5)
+
+        self.fr_balance_big.grid(row=0, column=1, sticky="wens", padx=10, pady=10)
+        self.fr_balance_big.grid_propagate(0)
+        self.balance_big.grid(padx=10, pady=10)
+        self.balance_big.configure(font=('arial', 12))
+        self.balance_big.place(anchor="c", relx=.5, rely=.1)
+
+        self.balance_value_label.grid(padx=10, pady=10)
+        self.balance_value_label.place(anchor="c", relx=.5, rely=.5)
+
+        # TODO: Funds aktualisieren wenn sie sich ändern
+        # TODO: Erklärung schreiben z.B. zum Aufladen von Guthaben auf den Betrag rechts oben klicken
 
         self.showing = "funds"
 
