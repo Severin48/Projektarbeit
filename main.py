@@ -186,11 +186,12 @@ class Dampf:
 
         self.game_listings_frame = ScrollableFrame(container=self.shop_page) # TODO: Scrollable mit mousewheel machen
 
+
         # for i in range(20):
         #     ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample shop label").pack()
 
         for game in self.shop_games:
-            GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).grid()
+            GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).pack()
 
         self.cart = Frame(master=self.shop_page, bg="blue")
 
@@ -230,7 +231,7 @@ class Dampf:
             self.sort_shop_by_name_label.configure(font=("arial", 12))
 
             for game in self.shop_games:
-                GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).grid()
+                GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).pack()
 
             # print("Opening shop")
             self.showing = "shop"
@@ -372,6 +373,23 @@ class ScrollableFrame(ttk.Frame):
         scrollbar.pack(side="right", fill="y")
 
 
+# class GameFrame(ttk.Frame):
+#     def __init__(self, container, game, *args, **kwargs):
+#         super().__init__(container, *args, **kwargs)
+#         self.game = game
+#
+#         canvas = tk.Canvas(self)
+#
+#         self.game_frame = ttk.Frame(canvas)
+#
+#         self.game_frame.columnconfigure(0, weight=1) # Image
+#         self.game_frame.columnconfigure(1, weight=3) # Name, Platforms, Genre
+#         self.game_frame.columnconfigure(2, weight=1)
+#
+#         canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
+#
+#         canvas.pack(side="left", fill="both", expand=True)
+
 class GameFrame(ttk.Frame):
     def __init__(self, container, game, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -386,6 +404,10 @@ class GameFrame(ttk.Frame):
         self.game_frame.columnconfigure(2, weight=1)
 
         canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
+
+        self.l_name = ttk.Label(self.game_frame, text=game.name, style="TB.TLabel", background="blue")
+        self.l_name.configure(font=('arial', 14))
+        self.l_name.pack()
 
         canvas.pack(side="left", fill="both", expand=True)
 
