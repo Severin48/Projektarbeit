@@ -8,6 +8,8 @@ width = 900 # 720
 height = 600 # 512
 small = height/20
 
+# TODO: Typing
+
 
 def get_balance():
     balance = 1.60384572
