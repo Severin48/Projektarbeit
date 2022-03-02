@@ -11,6 +11,17 @@ small = height/20
 # TODO: Typing
 
 
+class Game:
+    # TODO: Doc welche Einheiten/Typen z.B. Playtime in minuten
+    def __init__(self, name, price, genre, platforms, discounted, playtime): # , image
+        self.name = name
+        self.price = price
+        self.genre = genre
+        self.platforms = platforms
+        self.discounted = discounted
+        self.playtime = playtime
+
+
 def get_balance():
     balance = 1.60384572
     balance = round(balance, 2)
@@ -23,6 +34,20 @@ class Dampf:
         self.balance = balance
         master.title("Dampf")
         self.showing = ""
+        self.shop_games = set()
+        self.lib_games = set()
+        self.cart_games = set()
+
+        self.shop_games.add(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
+                            ["Windows"], False, 0))
+        self.shop_games.add(Game("Gegenschlag: Globale Offensive", 0, ["FPS", "Tactical shooter"],
+                            ["Windows", "Linux"], False, 101880))
+
+        self.shop_games.add(Game("The Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
+                                 ["Windows", "Linux"], False, 48920))
+
+        self.shop_games.add(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
+                                 ["Windows", "Linux"], False, 48920))
 
         self.mainframe = Frame(master=self.master, bg="green")  # , width=width, height=height)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
@@ -130,25 +155,25 @@ class Dampf:
                                    style="TB.TLabel")
         self.desc_hundred.configure(font=('arial', 14))
 
-        self.add_five = ttk.Label(self.fr_add_five, text="5,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_five = ttk.Button(self.fr_add_five, text="5,--€ Guthaben aufladen") # , style="TB.TLabel")
         self.add_five.bind("<Button-1>", lambda event, x=5: self.add_funds(event, x))
 
-        self.add_ten = ttk.Label(self.fr_add_ten, text="10,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_ten = ttk.Button(self.fr_add_ten, text="10,--€ Guthaben aufladen", style="TB.TLabel")
         self.add_ten.bind("<Button-1>", lambda event, x=10: self.add_funds(event, x))
 
-        self.add_twentyfive = ttk.Label(self.fr_add_twentyfive, text="25,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_twentyfive = ttk.Button(self.fr_add_twentyfive, text="25,--€ Guthaben aufladen", style="TB.TLabel")
         self.add_twentyfive.bind("<Button-1>", lambda event, x=25: self.add_funds(event, x))
 
-        self.add_fifty = ttk.Label(self.fr_add_fifty, text="50,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_fifty = ttk.Button(self.fr_add_fifty, text="50,--€ Guthaben aufladen", style="TB.TLabel")
         self.add_fifty.bind("<Button-1>", lambda event, x=50: self.add_funds(event, x))
 
-        self.add_hundred = ttk.Label(self.fr_add_hundred, text="100,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_hundred = ttk.Button(self.fr_add_hundred, text="100,--€ Guthaben aufladen", style="TB.TLabel")
         self.add_hundred.bind("<Button-1>", lambda event, x=100: self.add_funds(event, x))
 
         self.fr_balance_big = Frame(master=self.funds_frame, bg="darkred")
         self.balance_big = ttk.Label(self.fr_balance_big, text="Aktuelles Guthaben", style="TB.TLabel")
 
-        self.balance_value_label = ttk.Label(self.fr_balance_big, text=str(get_balance()) + ",--€", style="TB.TLabel")
+        self.balance_value_label = ttk.Label(self.fr_balance_big, text=str(get_balance()) + "€", style="TB.TLabel")
         self.balance_value_label.configure(font=("arial", 12))
 
         # ====================================== SHOP PAGE ======================================
@@ -163,8 +188,12 @@ class Dampf:
 
         self.game_listings_frame = ScrollableFrame(container=self.shop_page) # TODO: Scrollable mit mousewheel machen
 
-        for i in range(20):
-            ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample shop label").pack()
+
+        # for i in range(20):
+        #     ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample shop label").pack()
+
+        for game in self.shop_games:
+            GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).pack()
 
         self.cart = Frame(master=self.shop_page, bg="blue")
 
@@ -202,6 +231,9 @@ class Dampf:
 
             self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
             self.sort_shop_by_name_label.configure(font=("arial", 12))
+
+            for game in self.shop_games:
+                GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).pack()
 
             # print("Opening shop")
             self.showing = "shop"
@@ -311,6 +343,9 @@ class Dampf:
         self.sort_by_playtime_label.grid_forget()
         self.sort_lib_by_name_label.grid()
 
+    def get_shop_games(self):
+        return self.shop_games
+
 
     # def browse_game_listings(self):
     #     # TODO: Mit event prüfen ob nach oben oder unten gescrollt wird?
@@ -338,6 +373,49 @@ class ScrollableFrame(ttk.Frame):
 
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+
+# class GameFrame(ttk.Frame):
+#     def __init__(self, container, game, *args, **kwargs):
+#         super().__init__(container, *args, **kwargs)
+#         self.game = game
+#
+#         canvas = tk.Canvas(self)
+#
+#         self.game_frame = ttk.Frame(canvas)
+#
+#         self.game_frame.columnconfigure(0, weight=1) # Image
+#         self.game_frame.columnconfigure(1, weight=3) # Name, Platforms, Genre
+#         self.game_frame.columnconfigure(2, weight=1)
+#
+#         canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
+#
+#         canvas.pack(side="left", fill="both", expand=True)
+
+class GameFrame(ttk.Frame):
+    def __init__(self, container, game, *args, **kwargs):
+        super().__init__(container, *args, **kwargs)
+        self.game = game
+
+        canvas = tk.Canvas(self)
+
+        self.game_frame = ttk.Frame(canvas)
+
+        self.game_frame.columnconfigure(0, weight=1) # Image
+        self.game_frame.columnconfigure(1, weight=3) # Name, Platforms, Genre
+        self.game_frame.columnconfigure(2, weight=1)
+
+        canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
+
+        self.l_name = ttk.Label(self.game_frame, text=game.name, style="TB.TLabel", background="blue")
+        self.l_name.configure(font=('arial', 14))
+        self.l_name.pack()
+
+        canvas.pack(side="left", fill="both", expand=True)
+
+
+
+
 
 
 def main():

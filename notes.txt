@@ -1,0 +1,3 @@
+https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/ttk-Button.html
+
+--> class_	The widget class name. This may be specified when the widget is created, but cannot be changed later. For an explanation of widget classes, see Section 27, “Standardizing appearance”.
