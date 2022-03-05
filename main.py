@@ -130,36 +130,38 @@ class Dampf:
 
         style.configure("Addfds.TLabel", foreground="white", background="green", anchor="center", font=('arial', 20))
 
-        self.funds_frame = Frame(master=self.mainframe, bg="lightblue")
+        self.funds_frame = Frame(master=self.mainframe, bg=pas_dark)
         self.funds_frame.columnconfigure(0, weight=4)
         self.funds_frame.columnconfigure(1, weight=1)
         for i in range(5):
             self.funds_frame.rowconfigure(i, weight=1)
-        self.fr_add_five = Frame(master=self.funds_frame, bg=pas_dark)
-        self.fr_add_ten = Frame(master=self.funds_frame, bg=pas_dark)
-        self.fr_add_twentyfive = Frame(master=self.funds_frame, bg=pas_dark)
-        self.fr_add_fifty = Frame(master=self.funds_frame, bg=pas_dark)
-        self.fr_add_hundred = Frame(master=self.funds_frame, bg=pas_dark)
+        self.fr_add_five = Frame(master=self.funds_frame, bg=act_dark)
+        self.fr_add_ten = Frame(master=self.funds_frame, bg=act_dark)
+        self.fr_add_twentyfive = Frame(master=self.funds_frame, bg=act_dark)
+        self.fr_add_fifty = Frame(master=self.funds_frame, bg=act_dark)
+        self.fr_add_hundred = Frame(master=self.funds_frame, bg=act_dark)
+
+        # TODO: Padding dazwischen
 
         self.desc_five = ttk.Label(self.fr_add_five, text="5,--€", # \nMinimaler Aufladebetrag
                                    style="TB.TLabel")
-        self.desc_five.configure(font=('arial', 14))
+        self.desc_five.configure(font=('arial', 14), background=act_dark)
 
         self.desc_ten = ttk.Label(self.fr_add_ten, text="10,--€",
                                    style="TB.TLabel")
-        self.desc_ten.configure(font=('arial', 14))
+        self.desc_ten.configure(font=('arial', 14), background=act_dark)
 
         self.desc_twentyfive = ttk.Label(self.fr_add_twentyfive, text="25,--€",
                                    style="TB.TLabel")
-        self.desc_twentyfive.configure(font=('arial', 14))
+        self.desc_twentyfive.configure(font=('arial', 14), background=act_dark)
 
         self.desc_fifty = ttk.Label(self.fr_add_fifty, text="50,--€",
                                    style="TB.TLabel")
-        self.desc_fifty.configure(font=('arial', 14))
+        self.desc_fifty.configure(font=('arial', 14), background=act_dark)
 
         self.desc_hundred = ttk.Label(self.fr_add_hundred, text="100,--€",
                                    style="TB.TLabel")
-        self.desc_hundred.configure(font=('arial', 14))
+        self.desc_hundred.configure(font=('arial', 14), background=act_dark)
 
         self.add_five = ttk.Label(self.fr_add_five, text="5,--€ Guthaben aufladen", style="Addfds.TLabel")
         self.add_five.bind("<Button-1>", lambda event, x=5: self.add_funds(event, x))
@@ -176,10 +178,12 @@ class Dampf:
         self.add_hundred = ttk.Label(self.fr_add_hundred, text="100,--€ Guthaben aufladen", style="Addfds.TLabel")
         self.add_hundred.bind("<Button-1>", lambda event, x=100: self.add_funds(event, x))
 
-        self.fr_balance_big = Frame(master=self.funds_frame, bg="darkred")
-        self.balance_big = ttk.Label(self.fr_balance_big, text="Aktuelles Guthaben", style="TB.TLabel")
+        self.fr_balance_big = Frame(master=self.funds_frame, bg=act_dark)
+        self.balance_big = ttk.Label(self.fr_balance_big, text="Aktuelles Guthaben", style="TB.TLabel",
+                                     background=act_dark)
 
-        self.balance_value_label = ttk.Label(self.fr_balance_big, text=str(get_balance()) + "€", style="TB.TLabel")
+        self.balance_value_label = ttk.Label(self.fr_balance_big, text=str(get_balance()) + "€", style="TB.TLabel",
+                                             background=act_dark)
         self.balance_value_label.configure(font=("arial", 12))
 
         # ====================================== SHOP PAGE ======================================
