@@ -29,8 +29,9 @@ def get_balance():
 
 
 class Dampf:
-    def __init__(self, master, balance):
+    def __init__(self, master, style, balance):
         self.master = master
+        self.style = style
         self.balance = balance
         master.title("Dampf")
         self.showing = ""
@@ -124,16 +125,18 @@ class Dampf:
 
         # ====================================== Adding Funds ======================================
 
+        style.configure("Addfds.TLabel", foreground="white", background="green", anchor="center", font=('arial', 20))
+
         self.funds_frame = Frame(master=self.mainframe, bg="lightblue")
         self.funds_frame.columnconfigure(0, weight=4)
         self.funds_frame.columnconfigure(1, weight=1)
         for i in range(5):
             self.funds_frame.rowconfigure(i, weight=1)
-        self.fr_add_five = Frame(master=self.funds_frame, bg="green")
-        self.fr_add_ten = Frame(master=self.funds_frame, bg="blue")
-        self.fr_add_twentyfive = Frame(master=self.funds_frame, bg="red")
-        self.fr_add_fifty = Frame(master=self.funds_frame, bg="grey")
-        self.fr_add_hundred = Frame(master=self.funds_frame, bg="yellow")
+        self.fr_add_five = Frame(master=self.funds_frame, bg="black")
+        self.fr_add_ten = Frame(master=self.funds_frame, bg="black")
+        self.fr_add_twentyfive = Frame(master=self.funds_frame, bg="black")
+        self.fr_add_fifty = Frame(master=self.funds_frame, bg="black")
+        self.fr_add_hundred = Frame(master=self.funds_frame, bg="black")
 
         self.desc_five = ttk.Label(self.fr_add_five, text="5,--€", # \nMinimaler Aufladebetrag
                                    style="TB.TLabel")
@@ -155,7 +158,7 @@ class Dampf:
                                    style="TB.TLabel")
         self.desc_hundred.configure(font=('arial', 14))
 
-        self.add_five = ttk.Button(self.fr_add_five, text="5,--€ Guthaben aufladen") # , style="TB.TLabel")
+        self.add_five = ttk.Label(self.fr_add_five, text="5,--€ Guthaben aufladen", style="Addfds.TLabel") # , style="TB.TLabel")
         self.add_five.bind("<Button-1>", lambda event, x=5: self.add_funds(event, x))
 
         self.add_ten = ttk.Button(self.fr_add_ten, text="10,--€ Guthaben aufladen", style="TB.TLabel")
@@ -414,10 +417,6 @@ class GameFrame(ttk.Frame):
         canvas.pack(side="left", fill="both", expand=True)
 
 
-
-
-
-
 def main():
     # root = Tk()
     root = ThemedTk()
@@ -428,7 +427,7 @@ def main():
     # style.configure("TButton", foreground="green", background="black")
     style.configure("TB.TLabel", foreground="white", background="black", anchor="center", font=('arial', 20))
     style.configure(root, background="black", foreground="white")
-    dampf = Dampf(root, get_balance())
+    dampf = Dampf(root, style, get_balance())
     # canvas = Canvas(root, width=width, height=height)
     # canvas.grid()
     # canvas.grid(columnspan=3)
