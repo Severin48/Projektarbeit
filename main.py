@@ -8,6 +8,9 @@ width = 900 # 720
 height = 600 # 512
 small = height/20
 
+act_dark = "#252737"
+pas_dark = "#343247"
+
 # TODO: Typing
 
 
@@ -50,14 +53,14 @@ class Dampf:
         self.shop_games.add(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
                                  ["Windows", "Linux"], False, 48920))
 
-        self.mainframe = Frame(master=self.master, bg="green")  # , width=width, height=height)
+        self.mainframe = Frame(master=self.master, bg=pas_dark)  # , width=width, height=height)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
         self.mainframe.rowconfigure(1, weight=29)  # Shop Listing & Cart
         self.mainframe.columnconfigure(0, weight=1)
         self.mainframe.grid(row=0, column=0, sticky="WENS")
 
         top_bar_height = small
-        self.top_bar = Frame(master=self.mainframe, bg="black")
+        self.top_bar = Frame(master=self.mainframe, bg=pas_dark)
         # self.top_bar.grid_columnconfigure(2, minsize=width)
         self.top_bar.columnconfigure(0, weight=2)
         self.top_bar.columnconfigure(1, weight=2)
@@ -70,29 +73,29 @@ class Dampf:
         # self.top_bar.grid(row=0, column=0, columnspan=2, sticky="WENS")
         # TODO: Shop contents col=0, cart col=1 --> Analog bei Lib
 
-        self.fr_shop_label = Frame(master=self.top_bar, bg="black")
+        self.fr_shop_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_shop_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
         self.shop_label = ttk.Label(self.fr_shop_label, text="SHOP", style="TB.TLabel")
         self.shop_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
         self.shop_label.bind("<Button-1>", self.open_shop)
 
-        self.fr_lib_label = Frame(master=self.top_bar, bg="black")
+        self.fr_lib_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_lib_label.grid(row=0, column=1, sticky="W", padx=5, pady=5)
         self.lib_label = ttk.Label(self.fr_lib_label, text="BIBLIOTHEK", style="TB.TLabel")
         self.lib_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
         self.lib_label.bind("<Button-1>", self.open_lib)
 
-        self.fr_placeholder_label = Frame(master=self.top_bar, bg="black")
+        self.fr_placeholder_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_placeholder_label.grid(row=0, column=2, sticky="WENS", padx=5, pady=5)
-        self.placeholder_label = ttk.Label(self.fr_placeholder_label, style="TB.TLabel", background="black")
+        self.placeholder_label = ttk.Label(self.fr_placeholder_label, style="TB.TLabel", background=pas_dark)
         self.placeholder_label.grid(row=0, column=0, sticky="WENS")
 
-        self.fr_profile_label = Frame(master=self.top_bar, bg="black")
+        self.fr_profile_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_profile_label.grid(row=0, column=3, sticky="E", padx=5, pady=5)
         self.profile_label = ttk.Label(self.fr_profile_label, text="S1mple")
         self.profile_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
 
-        self.fr_balance_label = Frame(master=self.top_bar, bg="black")
+        self.fr_balance_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_balance_label.grid(row=0, column=4, sticky="E", padx=5, pady=5)
         self.balance_label = ttk.Label(self.fr_balance_label, text=str(balance) + "€")
         self.balance_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
@@ -100,13 +103,13 @@ class Dampf:
 
         # ====================================== LIB PAGE ======================================
 
-        self.lib_page = Frame(master=self.mainframe, bg="black")
+        self.lib_page = Frame(master=self.mainframe, bg=pas_dark)
         self.lib_page.columnconfigure(0, weight=7)
         self.lib_page.columnconfigure(1, weight=3)
         self.lib_page.rowconfigure(0, weight=1)
         self.lib_page.rowconfigure(1, weight=29)
 
-        self.sorting_bar_lib = Frame(master=self.lib_page, bg="black")
+        self.sorting_bar_lib = Frame(master=self.lib_page, bg=pas_dark)
 
         self.info_tab = Frame(master=self.lib_page, bg="blue")
 
@@ -132,11 +135,11 @@ class Dampf:
         self.funds_frame.columnconfigure(1, weight=1)
         for i in range(5):
             self.funds_frame.rowconfigure(i, weight=1)
-        self.fr_add_five = Frame(master=self.funds_frame, bg="black")
-        self.fr_add_ten = Frame(master=self.funds_frame, bg="black")
-        self.fr_add_twentyfive = Frame(master=self.funds_frame, bg="black")
-        self.fr_add_fifty = Frame(master=self.funds_frame, bg="black")
-        self.fr_add_hundred = Frame(master=self.funds_frame, bg="black")
+        self.fr_add_five = Frame(master=self.funds_frame, bg=pas_dark)
+        self.fr_add_ten = Frame(master=self.funds_frame, bg=pas_dark)
+        self.fr_add_twentyfive = Frame(master=self.funds_frame, bg=pas_dark)
+        self.fr_add_fifty = Frame(master=self.funds_frame, bg=pas_dark)
+        self.fr_add_hundred = Frame(master=self.funds_frame, bg=pas_dark)
 
         self.desc_five = ttk.Label(self.fr_add_five, text="5,--€", # \nMinimaler Aufladebetrag
                                    style="TB.TLabel")
@@ -158,19 +161,19 @@ class Dampf:
                                    style="TB.TLabel")
         self.desc_hundred.configure(font=('arial', 14))
 
-        self.add_five = ttk.Label(self.fr_add_five, text="5,--€ Guthaben aufladen", style="Addfds.TLabel") # , style="TB.TLabel")
+        self.add_five = ttk.Label(self.fr_add_five, text="5,--€ Guthaben aufladen", style="Addfds.TLabel")
         self.add_five.bind("<Button-1>", lambda event, x=5: self.add_funds(event, x))
 
-        self.add_ten = ttk.Button(self.fr_add_ten, text="10,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_ten = ttk.Label(self.fr_add_ten, text="10,--€ Guthaben aufladen", style="Addfds.TLabel")
         self.add_ten.bind("<Button-1>", lambda event, x=10: self.add_funds(event, x))
 
-        self.add_twentyfive = ttk.Button(self.fr_add_twentyfive, text="25,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_twentyfive = ttk.Label(self.fr_add_twentyfive, text="25,--€ Guthaben aufladen", style="Addfds.TLabel")
         self.add_twentyfive.bind("<Button-1>", lambda event, x=25: self.add_funds(event, x))
 
-        self.add_fifty = ttk.Button(self.fr_add_fifty, text="50,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_fifty = ttk.Label(self.fr_add_fifty, text="50,--€ Guthaben aufladen", style="Addfds.TLabel")
         self.add_fifty.bind("<Button-1>", lambda event, x=50: self.add_funds(event, x))
 
-        self.add_hundred = ttk.Button(self.fr_add_hundred, text="100,--€ Guthaben aufladen", style="TB.TLabel")
+        self.add_hundred = ttk.Label(self.fr_add_hundred, text="100,--€ Guthaben aufladen", style="Addfds.TLabel")
         self.add_hundred.bind("<Button-1>", lambda event, x=100: self.add_funds(event, x))
 
         self.fr_balance_big = Frame(master=self.funds_frame, bg="darkred")
@@ -181,13 +184,13 @@ class Dampf:
 
         # ====================================== SHOP PAGE ======================================
 
-        self.shop_page = Frame(master=self.mainframe, bg="black")
+        self.shop_page = Frame(master=self.mainframe, bg=pas_dark)
         self.shop_page.columnconfigure(0, weight=7)
         self.shop_page.columnconfigure(1, weight=3)
         self.shop_page.rowconfigure(0, weight=1)
         self.shop_page.rowconfigure(1, weight=29)
 
-        self.sorting_bar_sh = Frame(master=self.shop_page, bg="black")
+        self.sorting_bar_sh = Frame(master=self.shop_page, bg=pas_dark)
 
         self.game_listings_frame = ScrollableFrame(container=self.shop_page) # TODO: Scrollable mit mousewheel machen
 
@@ -212,8 +215,9 @@ class Dampf:
 
     def open_shop(self, event):
         if self.showing != "shop":
-            self.shop_label.configure(font=("arial", 20, "bold"))
-            self.lib_label.configure(font=('arial', 20))
+            self.shop_label.configure(font=("arial", 20, "bold"), background=act_dark)
+            self.lib_label.configure(font=('arial', 20), background=pas_dark)
+            self.balance_label.configure(background=pas_dark)
             # self.top_bar.grid(row=0, column=0, rowspan=1, sticky="WENS")
             # self.top_bar.grid_rowconfigure(rowspan=1)
 
@@ -244,8 +248,9 @@ class Dampf:
     def open_lib(self, event):
         self.shop_page.grid_forget()
         self.funds_frame.grid_forget()
-        self.lib_label.configure(font=("arial", 20, "bold"))
-        self.shop_label.configure(font=('arial', 20))
+        self.lib_label.configure(font=("arial", 20, "bold"), background=act_dark)
+        self.shop_label.configure(font=('arial', 20), background=pas_dark)
+        self.balance_label.configure(background=pas_dark)
         # self.top_bar.grid_rowconfigure(rowspan=1)
 
         self.lib_page.grid(row=1, column=0, sticky="wens")
@@ -269,8 +274,9 @@ class Dampf:
     def open_funds(self, event):
         self.shop_page.grid_forget()
         self.lib_page.grid_forget()
-        self.shop_label.configure(font=('arial', 20))
-        self.lib_label.configure(font=('arial', 20))
+        self.shop_label.configure(font=('arial', 20), background=pas_dark)
+        self.lib_label.configure(font=('arial', 20), background=pas_dark)
+        self.balance_label.configure(background=act_dark)
         # self.top_bar.grid_rowconfigure(rowspan=2) # TODO: Top bar shouldn't resize when clicking on funds and back
 
         self.funds_frame.grid(row=1, column=0, sticky="wens")
@@ -425,8 +431,8 @@ def main():
     # print(style.theme_names())
     # style.configure("C.TButton", foreground="white", background="black", relief="groove")
     # style.configure("TButton", foreground="green", background="black")
-    style.configure("TB.TLabel", foreground="white", background="black", anchor="center", font=('arial', 20))
-    style.configure(root, background="black", foreground="white")
+    style.configure("TB.TLabel", foreground="white", background=pas_dark, anchor="center", font=('arial', 20))
+    style.configure(root, background=pas_dark, foreground="white")
     dampf = Dampf(root, style, get_balance())
     # canvas = Canvas(root, width=width, height=height)
     # canvas.grid()
