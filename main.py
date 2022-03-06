@@ -8,8 +8,8 @@ width = 900 # 720
 height = 600 # 512
 small = height/20
 
-act_dark = "#252737"
-pas_dark = "#343247"
+act_dark = "#2d384b"
+pas_dark = "#1f232a"
 
 # TODO: Typing
 
@@ -25,17 +25,19 @@ class Game:
         self.playtime = playtime
 
 
-def get_balance():
-    balance = 1.60384572
-    balance = round(balance, 2)
-    return '{:.2f}'.format(balance)
+# def get_balance():
+#     # balance = 1.60384572
+#     balance = round(balance, 2)
+#     return '{:.2f}'.format(balance)
+
+# TODO: Wenn genug Funds vorhanden sind nicht auf AddFundsPage
 
 
 class Dampf:
-    def __init__(self, master, style, balance):
+    def __init__(self, master, style):  # , balance):
         self.master = master
         self.style = style
-        self.balance = balance
+        self.balance = 0 # alt: = balance
         master.title("Dampf")
         self.showing = ""
         self.shop_games = set()
@@ -97,7 +99,7 @@ class Dampf:
 
         self.fr_balance_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_balance_label.grid(row=0, column=4, sticky="E", padx=5, pady=5)
-        self.balance_label = ttk.Label(self.fr_balance_label, text=str(balance) + "€")
+        self.balance_label = ttk.Label(self.fr_balance_label, text=str(self.get_balance()) + "€")
         self.balance_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
         self.balance_label.bind("<Button-1>", self.open_funds)
 
@@ -114,11 +116,11 @@ class Dampf:
         self.info_tab = Frame(master=self.lib_page, bg="blue")
 
         self.sort_by_playtime_label = ttk.Label(self.sorting_bar_lib, text="Sortieren nach Spielzeit", width=20,
-                                                style="TB.TLabel")
+                                                style="Sorting.TLabel")
         self.sort_by_playtime_label.bind("<Button-1>", self.sort_by_playtime)
 
         self.sort_lib_by_name_label = ttk.Label(self.sorting_bar_lib, text="Sortieren nach Name", width=20,
-                                            style="TB.TLabel")
+                                            style="Sorting.TLabel")
         self.sort_lib_by_name_label.bind("<Button-1>", self.sort_lib_by_name)
 
         self.game_library_frame = ScrollableFrame(container=self.lib_page)
@@ -182,7 +184,7 @@ class Dampf:
         self.balance_big = ttk.Label(self.fr_balance_big, text="Aktuelles Guthaben", style="TB.TLabel",
                                      background=act_dark)
 
-        self.balance_value_label = ttk.Label(self.fr_balance_big, text=str(get_balance()) + "€", style="TB.TLabel",
+        self.balance_value_label = ttk.Label(self.fr_balance_big, text=str(self.get_balance()) + "€", style="TB.TLabel",
                                              background=act_dark)
         self.balance_value_label.configure(font=("arial", 12))
 
@@ -208,26 +210,22 @@ class Dampf:
         self.cart = Frame(master=self.shop_page, bg="blue")
 
         self.sort_by_price_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Preis", width=20,
-                                             style="TB.TLabel")
+                                             style="Sorting.TLabel")
         self.sort_by_price_label.bind("<Button-1>", self.sort_by_price)
 
         self.sort_shop_by_name_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Name", width=20,
-                                            style="TB.TLabel")
+                                            style="Sorting.TLabel")
         self.sort_shop_by_name_label.bind("<Button-1>", self.sort_shop_by_name)
 
         self.open_shop(event=None)  # Show the shop on launch
 
     def open_shop(self, event):
         if self.showing != "shop":
-            self.shop_label.configure(font=("arial", 20, "bold"), background=act_dark)
-            self.lib_label.configure(font=('arial', 20), background=pas_dark)
-            self.balance_label.configure(background=pas_dark)
-            # self.top_bar.grid(row=0, column=0, rowspan=1, sticky="WENS")
-            # self.top_bar.grid_rowconfigure(rowspan=1)
+            self.shop_label.configure(font=("arial", 20, "bold"))
+            self.lib_label.configure(font=('arial', 20))
 
             self.lib_page.grid_forget()
             self.funds_frame.grid_forget()
-            # login.grid_forget() # TODO: Login weg?
 
             self.shop_page.grid(row=1, column=0, sticky="wens")
 
@@ -238,24 +236,19 @@ class Dampf:
             self.cart.grid(row=1, column=1, sticky="wens")
 
             self.sort_by_price_label.grid(row=0, column=1, sticky="w")
-            self.sort_by_price_label.configure(font=("arial", 12))
 
             self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
-            self.sort_shop_by_name_label.configure(font=("arial", 12))
 
             for game in self.shop_games:
                 GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).pack()
 
-            # print("Opening shop")
             self.showing = "shop"
 
     def open_lib(self, event):
         self.shop_page.grid_forget()
         self.funds_frame.grid_forget()
-        self.lib_label.configure(font=("arial", 20, "bold"), background=act_dark)
-        self.shop_label.configure(font=('arial', 20), background=pas_dark)
-        self.balance_label.configure(background=pas_dark)
-        # self.top_bar.grid_rowconfigure(rowspan=1)
+        self.lib_label.configure(font=("arial", 20, "bold"))
+        self.shop_label.configure(font=('arial', 20))
 
         self.lib_page.grid(row=1, column=0, sticky="wens")
 
@@ -264,10 +257,8 @@ class Dampf:
         self.info_tab.grid(row=1, column=1, sticky="wens")
 
         self.sort_by_playtime_label.grid(row=0, column=1, sticky="w")
-        self.sort_by_playtime_label.configure(font=("arial", 12))
 
         self.sort_lib_by_name_label.grid(row=0, column=1, sticky="w")
-        self.sort_lib_by_name_label.configure(font=("arial", 12))
 
         self.game_library_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
 
@@ -278,9 +269,8 @@ class Dampf:
     def open_funds(self, event):
         self.shop_page.grid_forget()
         self.lib_page.grid_forget()
-        self.shop_label.configure(font=('arial', 20), background=pas_dark)
-        self.lib_label.configure(font=('arial', 20), background=pas_dark)
-        self.balance_label.configure(background=act_dark)
+        self.shop_label.configure(font=('arial', 20))
+        self.lib_label.configure(font=('arial', 20))
         # self.top_bar.grid_rowconfigure(rowspan=2) # TODO: Top bar shouldn't resize when clicking on funds and back
 
         self.funds_frame.grid(row=1, column=0, sticky="wens")
@@ -328,7 +318,17 @@ class Dampf:
 
     def add_funds(self, event, amount):
         # TODO: von Studierenden zu implementieren
-        print("Guthaben müsste {},--€ aufgeladen werden".format(amount))
+        self.balance = round(self.balance + amount, 2)
+        # print("Guthaben müsste {},--€ aufgeladen werden".format(amount))
+        new_amount_str = str(self.balance) + "€"
+        self.balance_value_label["text"] = new_amount_str
+        self.balance_label["text"] = new_amount_str
+
+
+    def get_balance(self):
+        # balance = 1.60384572
+        self.balance = round(self.balance, 2)
+        return '{:.2f}'.format(self.balance)
 
 
     def open_login(self, event):
@@ -353,6 +353,7 @@ class Dampf:
         self.sort_by_playtime_label.grid()
 
     def sort_by_playtime(self, event):
+        print("Nach Spielzeit sortieren")
         self.sort_by_playtime_label.grid_forget()
         self.sort_lib_by_name_label.grid()
 
@@ -437,7 +438,8 @@ def main():
     # style.configure("TButton", foreground="green", background="black")
     style.configure("TB.TLabel", foreground="white", background=pas_dark, anchor="center", font=('arial', 20))
     style.configure(root, background=pas_dark, foreground="white")
-    dampf = Dampf(root, style, get_balance())
+    style.configure("Sorting.TLabel", font=("arial", 12), background=pas_dark, anchor="center")
+    dampf = Dampf(root, style)  # , get_balance())
     # canvas = Canvas(root, width=width, height=height)
     # canvas.grid()
     # canvas.grid(columnspan=3)
