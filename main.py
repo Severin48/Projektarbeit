@@ -23,6 +23,16 @@ class Game:
         self.platforms = platforms
         self.discounted = discounted
         self.playtime = playtime
+        self.in_cart = False
+        self.owned = False
+
+    def to_cart(self, event):
+        print("Added {} to cart".format(self.name))
+        self.in_cart = True
+
+    def remove_from_cart(self, event):
+        print("Removed {} from cart".format(self.name))
+        self.in_cart = False
 
 
 # def get_balance():
@@ -367,7 +377,7 @@ class ScrollableFrame(ttk.Frame):
         # TODO: Refactor
         canvas = tk.Canvas(self)
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
-        self.scrollable_frame = ttk.Frame(canvas)
+        self.scrollable_frame = ttk.Frame(master=canvas)
 
         self.scrollable_frame.bind(
             "<Configure>",
@@ -414,13 +424,14 @@ class GameFrame(ttk.Frame):
         super().__init__(container, *args, **kwargs)
         self.game = game
 
-        canvas = tk.Canvas(self)
+        canvas = tk.Canvas(master=self, bg="turquoise")
 
-        self.game_frame = ttk.Frame(canvas)
+        self.game_frame = Frame(master=canvas, bg="yellow")
 
         self.game_frame.columnconfigure(0, weight=1) # Image
         self.game_frame.columnconfigure(1, weight=3) # Name, Platforms, Genre
-        self.game_frame.columnconfigure(2, weight=1)
+        self.game_frame.columnconfigure(2, weight=1) # Discount tag if needed
+        self.game_frame.columnconfigure(3, weight=1) # Add/remove to/from cart Button
 
         self.game_frame.rowconfigure(0, weight=1) # Name
         self.game_frame.rowconfigure(1, weight=1) # Platforms
@@ -437,6 +448,22 @@ class GameFrame(ttk.Frame):
 
         self.l_genre = ttk.Label(self.game_frame, text=game_str(game.genre), style="GameDesc.TLabel", background="blue")
         self.l_genre.grid(row=2, column=1)
+
+        if game.discounted:
+            self.l_discounted = ttk.Label(self.game_frame, text="Rabatt", style="TB.TLabel", background="blue")
+            self.l_discounted.grid(row=1, column=2)
+
+        self.fr_manage_cart = Frame(self.game_frame, bg="green")
+
+        if game.in_cart:
+            self.l_manage_cart = ttk.Label(self.fr_manage_cart, text="Remove from cart", style="TB.TLabel")
+            self.l_manage_cart.bind("<Button-1>", game.remove_from_cart)
+        else:
+            self.l_manage_cart = ttk.Label(self.fr_manage_cart, text="Add to cart", style="TB.TLabel")
+            self.l_manage_cart.bind("<Button-1>", game.to_cart)
+
+        self.fr_manage_cart.grid(row=1, column=3)
+        self.l_manage_cart.grid()
 
         canvas.pack(side="left", fill="both", expand=True)
 
