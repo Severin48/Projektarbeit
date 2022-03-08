@@ -49,7 +49,7 @@ class Dampf:
         self.shop_games.add(Game("Gegenschlag: Globale Offensive", 0, ["FPS", "Tactical shooter"],
                             ["Windows", "Linux"], False, 101880))
 
-        self.shop_games.add(Game("The Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
+        self.shop_games.add(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
                                  ["Windows", "Linux"], False, 48920))
 
         self.shop_games.add(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
@@ -146,24 +146,19 @@ class Dampf:
         # TODO: Padding dazwischen
 
         self.desc_five = ttk.Label(self.fr_add_five, text="5,--€", # \nMinimaler Aufladebetrag
-                                   style="TB.TLabel")
-        self.desc_five.configure(font=('arial', 14), background=act_dark)
+                                   style="FundsAmount.TLabel")
 
         self.desc_ten = ttk.Label(self.fr_add_ten, text="10,--€",
-                                   style="TB.TLabel")
-        self.desc_ten.configure(font=('arial', 14), background=act_dark)
+                                   style="FundsAmount.TLabel")
 
         self.desc_twentyfive = ttk.Label(self.fr_add_twentyfive, text="25,--€",
-                                   style="TB.TLabel")
-        self.desc_twentyfive.configure(font=('arial', 14), background=act_dark)
+                                   style="FundsAmount.TLabel")
 
         self.desc_fifty = ttk.Label(self.fr_add_fifty, text="50,--€",
-                                   style="TB.TLabel")
-        self.desc_fifty.configure(font=('arial', 14), background=act_dark)
+                                   style="FundsAmount.TLabel")
 
         self.desc_hundred = ttk.Label(self.fr_add_hundred, text="100,--€",
-                                   style="TB.TLabel")
-        self.desc_hundred.configure(font=('arial', 14), background=act_dark)
+                                   style="FundsAmount.TLabel")
 
         self.add_five = ttk.Label(self.fr_add_five, text="5,--€ Guthaben aufladen", style="Addfds.TLabel")
         self.add_five.bind("<Button-1>", lambda event, x=5: self.add_funds(event, x))
@@ -406,6 +401,14 @@ class ScrollableFrame(ttk.Frame):
 #
 #         canvas.pack(side="left", fill="both", expand=True)
 
+def game_str(platforms):
+    ret = ""
+    for platform in platforms:
+        ret += platform + ", "
+    ret = ret[:-2]
+    return ret
+
+
 class GameFrame(ttk.Frame):
     def __init__(self, container, game, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -419,11 +422,21 @@ class GameFrame(ttk.Frame):
         self.game_frame.columnconfigure(1, weight=3) # Name, Platforms, Genre
         self.game_frame.columnconfigure(2, weight=1)
 
+        self.game_frame.rowconfigure(0, weight=1) # Name
+        self.game_frame.rowconfigure(1, weight=1) # Platforms
+        self.game_frame.rowconfigure(2, weight=1) # Genre
+
         canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
 
-        self.l_name = ttk.Label(self.game_frame, text=game.name, style="TB.TLabel", background="blue")
-        self.l_name.configure(font=('arial', 14))
-        self.l_name.pack()
+        self.l_name = ttk.Label(self.game_frame, text=game.name, style="GameDesc.TLabel", background="blue")
+        self.l_name.grid(row=0, column=1)
+
+        self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
+                                     background="blue")
+        self.l_platforms.grid(row=1, column=1)
+
+        self.l_genre = ttk.Label(self.game_frame, text=game_str(game.genre), style="GameDesc.TLabel", background="blue")
+        self.l_genre.grid(row=2, column=1)
 
         canvas.pack(side="left", fill="both", expand=True)
 
@@ -439,6 +452,8 @@ def main():
     style.configure("TB.TLabel", foreground="white", background=pas_dark, anchor="center", font=('arial', 20))
     style.configure(root, background=pas_dark, foreground="white")
     style.configure("Sorting.TLabel", font=("arial", 12), background=pas_dark, anchor="center")
+    style.configure("FundsAmount.TLabel", font=('arial', 14), background=act_dark)
+    style.configure("GameDesc.TLabel", font=('arial', 14))
     dampf = Dampf(root, style)  # , get_balance())
     # canvas = Canvas(root, width=width, height=height)
     # canvas.grid()
