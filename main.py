@@ -16,7 +16,7 @@ pas_dark = "#1f232a"
 
 class Game:
     # TODO: Doc welche Einheiten/Typen z.B. Playtime in minuten
-    def __init__(self, name, price, genre, platforms, discounted, playtime): # , image
+    def __init__(self, name, price, genre, platforms, discounted, playtime, owned=False): # , image
         self.name = name
         self.price = price
         self.genre = genre
@@ -24,7 +24,7 @@ class Game:
         self.discounted = discounted
         self.playtime = playtime
         self.in_cart = False
-        self.owned = False
+        self.owned = owned
 
     def to_cart(self, event):
         print("Added {} to cart".format(self.name))
@@ -50,20 +50,29 @@ class Dampf:
         self.balance = 0 # alt: = balance
         master.title("Dampf")
         self.showing = ""
-        self.shop_games = set()
-        self.lib_games = set()
-        self.cart_games = set()
+        self.all_games = []
+        self.shop_games = []
+        self.lib_games = []
+        self.cart_games = []
+        self.game_frames = []
 
-        self.shop_games.add(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
+        self.all_games.append(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
                             ["Windows"], False, 0))
-        self.shop_games.add(Game("Gegenschlag: Globale Offensive", 0, ["FPS", "Tactical shooter"],
-                            ["Windows", "Linux"], False, 101880))
 
-        self.shop_games.add(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
+        self.all_games.append(Game("Gegenschlag: Globale Offensive", 0, ["FPS", "Tactical shooter"],
+                            ["Windows", "Linux"], False, 101880, owned=True))
+
+        self.all_games.append(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
                                  ["Windows", "Linux"], False, 48920))
 
-        self.shop_games.add(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
+        self.all_games.append(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
                                  ["Windows", "Linux"], False, 48920))
+
+        for game in self.all_games:
+            if not game.owned:
+                self.shop_games.append(game)
+            else:
+                self.lib_games.append(game)
 
         self.mainframe = Frame(master=self.master, bg=pas_dark)  # , width=width, height=height)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
@@ -135,9 +144,6 @@ class Dampf:
 
         self.game_library_frame = ScrollableFrame(container=self.lib_page)
 
-        for i in range(20):
-            ttk.Label(self.game_library_frame.scrollable_frame, text="Sample library label").pack()
-
         # ====================================== Adding Funds ======================================
 
         style.configure("Addfds.TLabel", foreground="white", background="green", anchor="center", font=('arial', 20))
@@ -203,14 +209,12 @@ class Dampf:
 
         self.sorting_bar_sh = Frame(master=self.shop_page, bg=pas_dark)
 
-        self.game_listings_frame = ScrollableFrame(container=self.shop_page) # TODO: Scrollable mit mousewheel machen
+        self.game_listings_frame = ScrollableFrame(container=self.shop_page)  # TODO: Scrollable mit mousewheel machen
 
-
-        # for i in range(20):
-        #     ttk.Label(self.game_listings_frame.scrollable_frame, text="Sample shop label").pack()
-
-        for game in self.shop_games:
-            GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).pack()
+        for i, game in enumerate(self.all_games):
+            self.game_frames.append(GameFrame(container=self.game_listings_frame.scrollable_frame, game=game))
+            if game in self.shop_games:
+                self.game_frames[i].grid()
 
         self.cart = Frame(master=self.shop_page, bg="blue")
 
@@ -244,8 +248,12 @@ class Dampf:
 
             self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
 
-            for game in self.shop_games:
-                GameFrame(container=self.game_listings_frame.scrollable_frame, game=game).pack()
+            for game_frame in self.game_frames:
+                if game_frame.game in self.shop_games:
+                    game_frame.grid()
+                else:
+                    game_frame.grid_forget()
+
 
             self.showing = "shop"
 
@@ -266,6 +274,16 @@ class Dampf:
         self.sort_lib_by_name_label.grid(row=0, column=1, sticky="w")
 
         self.game_library_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
+
+        for game_frame in self.game_frames:
+            if game_frame.game in self.lib_games:
+                # game_frame.container = # TODO: Man kann container nicht im Nachhinein ändern, deshalb müssen alle
+                #  GameFrames auf beiden Seiten erstellt werden aber wie z.B.
+                # wenn ein Game rausgenommen wird und neue Reihenfolge dort ist? Ordnen sie sich neu?
+                # TODO: CSGO wird nicht in LIB angezeigt
+                game_frame.grid()
+            else:
+                game_frame.grid_forget()
 
         self.showing = "lib"
 
@@ -375,7 +393,7 @@ class ScrollableFrame(ttk.Frame):
     def __init__(self, container, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
         # TODO: Refactor
-        canvas = tk.Canvas(self)
+        canvas = tk.Canvas(self, bg="purple")
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
         self.scrollable_frame = ttk.Frame(master=canvas)
 
@@ -424,7 +442,7 @@ class GameFrame(ttk.Frame):
         super().__init__(container, *args, **kwargs)
         self.game = game
 
-        canvas = tk.Canvas(master=self, bg="turquoise")
+        canvas = tk.Canvas(self, bg="turquoise")
 
         self.game_frame = Frame(master=canvas, bg="yellow")
 
@@ -438,6 +456,9 @@ class GameFrame(ttk.Frame):
         self.game_frame.rowconfigure(2, weight=1) # Genre
 
         canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
+
+        # self.image = ... TODO: Images
+        # self.image.grid(row=0, column=0)
 
         self.l_name = ttk.Label(self.game_frame, text=game.name, style="GameDesc.TLabel", background="blue")
         self.l_name.grid(row=0, column=1)
