@@ -398,6 +398,8 @@ class ScrollableFrame(ttk.Frame):
         canvas = tk.Canvas(self, bg="purple")
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
         self.scrollable_frame = ttk.Frame(canvas)
+        canvas.columnconfigure(0, weight=1)
+        canvas.rowconfigure(0, weight=1)
         self.scrollable_frame.columnconfigure(0, weight=1)
         self.scrollable_frame.rowconfigure(0, weight=1)
 
@@ -446,6 +448,9 @@ class GameFrame(ttk.Frame):
     def __init__(self, container, game, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
         self.game = game
+
+        container.rowconfigure(0, weight=1)
+        container.columnconfigure(0, weight=1)
 
         # canvas = tk.Canvas(self, bg="turquoise")
 
