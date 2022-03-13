@@ -211,10 +211,13 @@ class Dampf:
 
         self.game_listings_frame = ScrollableFrame(container=self.shop_page)  # TODO: Scrollable mit mousewheel machen
 
-        for i, game in enumerate(self.all_games):
-            self.game_frames.append(GameFrame(container=self.game_listings_frame.scrollable_frame, game=game))
-            if game in self.shop_games:
-                self.game_frames[i].grid()
+        # for i, game in enumerate(self.all_games):
+        for game in self.all_games:
+            temp_frame = GameFrame(container=self.game_listings_frame.scrollable_frame, game=game)
+            self.game_frames.append(temp_frame)
+            temp_frame.grid(column=0, sticky="news")
+            # if game in self.shop_games:
+            #     self.game_frames[i].grid()
 
         self.cart = Frame(master=self.shop_page, bg="blue")
 
@@ -253,7 +256,6 @@ class Dampf:
                     game_frame.grid()
                 else:
                     game_frame.grid_forget()
-
 
             self.showing = "shop"
 
@@ -395,12 +397,15 @@ class ScrollableFrame(ttk.Frame):
         # TODO: Refactor
         canvas = tk.Canvas(self, bg="purple")
         scrollbar = ttk.Scrollbar(self, orient="vertical", command=canvas.yview)
-        self.scrollable_frame = ttk.Frame(master=canvas)
+        self.scrollable_frame = ttk.Frame(canvas)
+        self.scrollable_frame.columnconfigure(0, weight=1)
+        self.scrollable_frame.rowconfigure(0, weight=1)
 
         self.scrollable_frame.bind(
             "<Configure>",
             lambda e: canvas.configure(
-                scrollregion=canvas.bbox("all")
+                scrollregion=canvas.bbox("all")  # Wird aufgerufen wenn sich Inhalte ändern --> scrollregion wird
+                # aktualisiert
             )
         )
 
@@ -442,20 +447,21 @@ class GameFrame(ttk.Frame):
         super().__init__(container, *args, **kwargs)
         self.game = game
 
-        canvas = tk.Canvas(self, bg="turquoise")
+        # canvas = tk.Canvas(self, bg="turquoise")
 
-        self.game_frame = Frame(master=canvas, bg="yellow")
+        # self.game_frame = Frame(master=canvas, bg="yellow")
+        self.game_frame = Frame(master=container, bg="red")  # , bg="yellow")
 
-        self.game_frame.columnconfigure(0, weight=1) # Image
-        self.game_frame.columnconfigure(1, weight=3) # Name, Platforms, Genre
-        self.game_frame.columnconfigure(2, weight=1) # Discount tag if needed
-        self.game_frame.columnconfigure(3, weight=1) # Add/remove to/from cart Button
+        self.game_frame.columnconfigure(0, weight=1)  # Image
+        self.game_frame.columnconfigure(1, weight=3)  # Name, Platforms, Genre
+        self.game_frame.columnconfigure(2, weight=1)  # Discount tag if needed
+        self.game_frame.columnconfigure(3, weight=1)  # Add/remove to/from cart Button
 
-        self.game_frame.rowconfigure(0, weight=1) # Name
-        self.game_frame.rowconfigure(1, weight=1) # Platforms
-        self.game_frame.rowconfigure(2, weight=1) # Genre
+        self.game_frame.rowconfigure(0, weight=1)  # Name
+        self.game_frame.rowconfigure(1, weight=1)  # Platforms
+        self.game_frame.rowconfigure(2, weight=1)  # Genre
 
-        canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
+        # canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
 
         # self.image = ... TODO: Images
         # self.image.grid(row=0, column=0)
@@ -483,10 +489,12 @@ class GameFrame(ttk.Frame):
             self.l_manage_cart = ttk.Label(self.fr_manage_cart, text="Add to cart", style="TB.TLabel")
             self.l_manage_cart.bind("<Button-1>", game.to_cart)
 
-        self.fr_manage_cart.grid(row=1, column=3)
         self.l_manage_cart.grid()
+        self.fr_manage_cart.grid(row=1, column=3)
 
-        canvas.pack(side="left", fill="both", expand=True)
+        self.game_frame.grid(column=0, sticky="nsew", padx=10, pady=10)
+
+        # canvas.pack(side="left", fill="both", expand=True)
 
 
 def main():
