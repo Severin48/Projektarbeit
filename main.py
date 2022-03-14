@@ -16,7 +16,7 @@ pas_dark = "#1f232a"
 
 class Game:
     # TODO: Doc welche Einheiten/Typen z.B. Playtime in minuten
-    def __init__(self, name, price, genre, platforms, discounted, playtime, owned=False): # , image
+    def __init__(self, name, price, genre, platforms, playtime, img, owned=False, discounted=False):
         self.name = name
         self.price = price
         self.genre = genre
@@ -25,6 +25,7 @@ class Game:
         self.playtime = playtime
         self.in_cart = False
         self.owned = owned
+        self.img = ImageTk.PhotoImage(Image.open("imgs/" + img))
 
     def to_cart(self, event):
         print("Added {} to cart".format(self.name))
@@ -57,16 +58,16 @@ class Dampf:
         self.game_frames = []
 
         self.all_games.append(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
-                            ["Windows"], False, 0))
+                            ["Windows"], 0, "mw2.png"))
 
         self.all_games.append(Game("Gegenschlag: Globale Offensive", 0, ["FPS", "Tactical shooter"],
-                            ["Windows", "Linux"], False, 101880, owned=True))
+                            ["Windows", "Linux"], 101880, "cs.png", owned=True))
 
         self.all_games.append(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
-                                 ["Windows", "Linux"], False, 48920))
+                                 ["Windows", "Linux"], 48920, "tes5.png"))
 
         self.all_games.append(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
-                                 ["Windows", "Linux"], False, 48920))
+                                 ["Windows", "Linux"], 48920, "g2.png"))
 
         for game in self.all_games:
             if not game.owned:
@@ -468,8 +469,8 @@ class GameFrame(ttk.Frame):
 
         # canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
 
-        # self.image = ... TODO: Images
-        # self.image.grid(row=0, column=0)
+        self.img = ttk.Label(self.game_frame, image=game.img)
+        self.img.grid(row=0, column=0, sticky="nsew")
 
         self.l_name = ttk.Label(self.game_frame, text=game.name, style="GameDesc.TLabel", background="blue")
         self.l_name.grid(row=0, column=1)
