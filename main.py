@@ -4,8 +4,8 @@ from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
 
-width = 900 # 720
-height = 600 # 512
+width = 900  # 720
+height = 600  # 512
 small = height/20
 
 act_dark = "#2d384b"
@@ -48,7 +48,7 @@ class Dampf:
     def __init__(self, master, style):  # , balance):
         self.master = master
         self.style = style
-        self.balance = 0 # alt: = balance
+        self.balance = 0  # alt: = balance
         master.title("Dampf")
         self.showing = ""
         self.all_games = []
@@ -58,16 +58,16 @@ class Dampf:
         self.game_frames = []
 
         self.all_games.append(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
-                            ["Windows"], 0, "mw2.png", discounted=True))
+                                   ["Windows"], 0, "mw2.png", discounted=True))
 
         self.all_games.append(Game("Gegenschlag: Globale Offensive", 0, ["FPS", "Tactical shooter"],
-                            ["Windows", "Linux"], 101880, "cs.png", owned=True, discounted=True))
+                                   ["Windows", "Linux"], 101880, "cs.png", owned=True, discounted=True))
 
         self.all_games.append(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
-                                 ["Windows", "Linux"], 48920, "tes5.png", discounted=True))
+                                   ["Windows", "Linux"], 48920, "tes5.png", discounted=True))
 
         self.all_games.append(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
-                                 ["Windows", "Linux"], 48920, "g2.png"))
+                                   ["Windows", "Linux"], 48920, "g2.png"))
 
         for game in self.all_games:
             if not game.owned:
@@ -75,7 +75,8 @@ class Dampf:
             else:
                 self.lib_games.append(game)
 
-        self.mainframe = Frame(master=self.master, bg=pas_dark)  # , width=width, height=height)
+        # , width=width, height=height)
+        self.mainframe = Frame(master=self.master, bg=pas_dark)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
         self.mainframe.rowconfigure(1, weight=29)  # Shop Listing & Cart
         self.mainframe.columnconfigure(0, weight=1)
@@ -97,19 +98,23 @@ class Dampf:
 
         self.fr_shop_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_shop_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
-        self.shop_label = ttk.Label(self.fr_shop_label, text="SHOP", style="TB.TLabel")
+        self.shop_label = ttk.Label(
+            self.fr_shop_label, text="SHOP", style="TB.TLabel")
         self.shop_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
         self.shop_label.bind("<Button-1>", self.open_shop)
 
         self.fr_lib_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_lib_label.grid(row=0, column=1, sticky="W", padx=5, pady=5)
-        self.lib_label = ttk.Label(self.fr_lib_label, text="BIBLIOTHEK", style="TB.TLabel")
+        self.lib_label = ttk.Label(
+            self.fr_lib_label, text="BIBLIOTHEK", style="TB.TLabel")
         self.lib_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
         self.lib_label.bind("<Button-1>", self.open_lib)
 
         self.fr_placeholder_label = Frame(master=self.top_bar, bg=pas_dark)
-        self.fr_placeholder_label.grid(row=0, column=2, sticky="WENS", padx=5, pady=5)
-        self.placeholder_label = ttk.Label(self.fr_placeholder_label, style="TB.TLabel", background=pas_dark)
+        self.fr_placeholder_label.grid(
+            row=0, column=2, sticky="WENS", padx=5, pady=5)
+        self.placeholder_label = ttk.Label(
+            self.fr_placeholder_label, style="TB.TLabel", background=pas_dark)
         self.placeholder_label.grid(row=0, column=0, sticky="WENS")
 
         self.fr_profile_label = Frame(master=self.top_bar, bg=pas_dark)
@@ -119,7 +124,8 @@ class Dampf:
 
         self.fr_balance_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_balance_label.grid(row=0, column=4, sticky="E", padx=5, pady=5)
-        self.balance_label = ttk.Label(self.fr_balance_label, text=str(self.get_balance()) + "€")
+        self.balance_label = ttk.Label(
+            self.fr_balance_label, text=str(self.get_balance()) + "€")
         self.balance_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
         self.balance_label.bind("<Button-1>", self.open_funds)
 
@@ -140,14 +146,15 @@ class Dampf:
         self.sort_by_playtime_label.bind("<Button-1>", self.sort_by_playtime)
 
         self.sort_lib_by_name_label = ttk.Label(self.sorting_bar_lib, text="Sortieren nach Name", width=20,
-                                            style="Sorting.TLabel")
+                                                style="Sorting.TLabel")
         self.sort_lib_by_name_label.bind("<Button-1>", self.sort_lib_by_name)
 
         self.game_library_frame = ScrollableFrame(container=self.lib_page)
 
         # ====================================== Adding Funds ======================================
 
-        style.configure("Addfds.TLabel", foreground="white", background="green", anchor="center", font=('arial', 20))
+        style.configure("Addfds.TLabel", foreground="white",
+                        background="green", anchor="center", font=('arial', 20))
 
         self.funds_frame = Frame(master=self.mainframe, bg=pas_dark)
         self.funds_frame.columnconfigure(0, weight=4)
@@ -162,35 +169,45 @@ class Dampf:
 
         # TODO: Padding dazwischen
 
-        self.desc_five = ttk.Label(self.fr_add_five, text="5,--€", # \nMinimaler Aufladebetrag
+        self.desc_five = ttk.Label(self.fr_add_five, text="5,--€",  # \nMinimaler Aufladebetrag
                                    style="FundsAmount.TLabel")
 
         self.desc_ten = ttk.Label(self.fr_add_ten, text="10,--€",
-                                   style="FundsAmount.TLabel")
+                                  style="FundsAmount.TLabel")
 
         self.desc_twentyfive = ttk.Label(self.fr_add_twentyfive, text="25,--€",
-                                   style="FundsAmount.TLabel")
+                                         style="FundsAmount.TLabel")
 
         self.desc_fifty = ttk.Label(self.fr_add_fifty, text="50,--€",
-                                   style="FundsAmount.TLabel")
+                                    style="FundsAmount.TLabel")
 
         self.desc_hundred = ttk.Label(self.fr_add_hundred, text="100,--€",
-                                   style="FundsAmount.TLabel")
+                                      style="FundsAmount.TLabel")
 
-        self.add_five = ttk.Label(self.fr_add_five, text="5,--€ Guthaben aufladen", style="Addfds.TLabel")
-        self.add_five.bind("<Button-1>", lambda event, x=5: self.add_funds(event, x))
+        self.add_five = ttk.Label(
+            self.fr_add_five, text="5,--€ Guthaben aufladen", style="Addfds.TLabel")
+        self.add_five.bind("<Button-1>", lambda event,
+                           x=5: self.add_funds(event, x))
 
-        self.add_ten = ttk.Label(self.fr_add_ten, text="10,--€ Guthaben aufladen", style="Addfds.TLabel")
-        self.add_ten.bind("<Button-1>", lambda event, x=10: self.add_funds(event, x))
+        self.add_ten = ttk.Label(
+            self.fr_add_ten, text="10,--€ Guthaben aufladen", style="Addfds.TLabel")
+        self.add_ten.bind("<Button-1>", lambda event,
+                          x=10: self.add_funds(event, x))
 
-        self.add_twentyfive = ttk.Label(self.fr_add_twentyfive, text="25,--€ Guthaben aufladen", style="Addfds.TLabel")
-        self.add_twentyfive.bind("<Button-1>", lambda event, x=25: self.add_funds(event, x))
+        self.add_twentyfive = ttk.Label(
+            self.fr_add_twentyfive, text="25,--€ Guthaben aufladen", style="Addfds.TLabel")
+        self.add_twentyfive.bind(
+            "<Button-1>", lambda event, x=25: self.add_funds(event, x))
 
-        self.add_fifty = ttk.Label(self.fr_add_fifty, text="50,--€ Guthaben aufladen", style="Addfds.TLabel")
-        self.add_fifty.bind("<Button-1>", lambda event, x=50: self.add_funds(event, x))
+        self.add_fifty = ttk.Label(
+            self.fr_add_fifty, text="50,--€ Guthaben aufladen", style="Addfds.TLabel")
+        self.add_fifty.bind("<Button-1>", lambda event,
+                            x=50: self.add_funds(event, x))
 
-        self.add_hundred = ttk.Label(self.fr_add_hundred, text="100,--€ Guthaben aufladen", style="Addfds.TLabel")
-        self.add_hundred.bind("<Button-1>", lambda event, x=100: self.add_funds(event, x))
+        self.add_hundred = ttk.Label(
+            self.fr_add_hundred, text="100,--€ Guthaben aufladen", style="Addfds.TLabel")
+        self.add_hundred.bind("<Button-1>", lambda event,
+                              x=100: self.add_funds(event, x))
 
         self.fr_balance_big = Frame(master=self.funds_frame, bg=act_dark)
         self.balance_big = ttk.Label(self.fr_balance_big, text="Aktuelles Guthaben", style="TB.TLabel",
@@ -210,11 +227,13 @@ class Dampf:
 
         self.sorting_bar_sh = Frame(master=self.shop_page, bg=pas_dark)
 
-        self.game_listings_frame = ScrollableFrame(container=self.shop_page)  # TODO: Scrollable mit mousewheel machen
+        # TODO: Scrollable mit mousewheel machen
+        self.game_listings_frame = ScrollableFrame(container=self.shop_page)
 
         # for i, game in enumerate(self.all_games):
         for game in self.all_games:
-            temp_frame = GameFrame(container=self.game_listings_frame.scrollable_frame, game=game)
+            temp_frame = GameFrame(
+                container=self.game_listings_frame.scrollable_frame, game=game)
             self.game_frames.append(temp_frame)
             temp_frame.grid(column=0, sticky="news")
             # if game in self.shop_games:
@@ -227,7 +246,7 @@ class Dampf:
         self.sort_by_price_label.bind("<Button-1>", self.sort_by_price)
 
         self.sort_shop_by_name_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Name", width=20,
-                                            style="Sorting.TLabel")
+                                                 style="Sorting.TLabel")
         self.sort_shop_by_name_label.bind("<Button-1>", self.sort_shop_by_name)
 
         self.open_shop(event=None)  # Show the shop on launch
@@ -244,7 +263,8 @@ class Dampf:
 
             self.sorting_bar_sh.grid(row=0, column=0, sticky="wens")
 
-            self.game_listings_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
+            self.game_listings_frame.grid(
+                row=1, column=0, sticky='nsew', padx=20, pady=20)
 
             self.cart.grid(row=1, column=1, sticky="wens")
 
@@ -276,7 +296,8 @@ class Dampf:
 
         self.sort_lib_by_name_label.grid(row=0, column=1, sticky="w")
 
-        self.game_library_frame.grid(row=1, column=0, sticky='nsew', padx=20, pady=20)
+        self.game_library_frame.grid(
+            row=1, column=0, sticky='nsew', padx=20, pady=20)
 
         for game_frame in self.game_frames:
             if game_frame.game in self.lib_games:
@@ -328,7 +349,8 @@ class Dampf:
         self.add_hundred.grid(row=4, column=1, sticky="e", padx=10, pady=10)
         self.add_hundred.place(anchor="center", relx=.75, rely=.5)
 
-        self.fr_balance_big.grid(row=0, column=1, sticky="wens", padx=10, pady=10)
+        self.fr_balance_big.grid(
+            row=0, column=1, sticky="wens", padx=10, pady=10)
         self.fr_balance_big.grid_propagate(0)
         self.balance_big.grid(padx=10, pady=10)
         self.balance_big.configure(font=('arial', 12))
@@ -350,12 +372,10 @@ class Dampf:
         self.balance_value_label["text"] = new_amount_str
         self.balance_label["text"] = new_amount_str
 
-
     def get_balance(self):
         # balance = 1.60384572
         self.balance = round(self.balance, 2)
         return '{:.2f}'.format(self.balance)
-
 
     def open_login(self, event):
         print("Opening login screen")
@@ -386,7 +406,6 @@ class Dampf:
     def get_shop_games(self):
         return self.shop_games
 
-
     # def browse_game_listings(self):
     #     # TODO: Mit event prüfen ob nach oben oder unten gescrollt wird?
     #     pass
@@ -397,7 +416,8 @@ class ScrollableFrame(ttk.Frame):
         super().__init__(container, *args, **kwargs)
         # TODO: Refactor
         self.canvas = tk.Canvas(self, bg="purple")
-        self.scrollbar = ttk.Scrollbar(self, orient="vertical", command=self.canvas.yview)
+        self.scrollbar = ttk.Scrollbar(
+            self, orient="vertical", command=self.canvas.yview)
         self.scrollable_frame = Frame(self.canvas, bg="yellow")
         # self.canvas.columnconfigure(0, weight=1)
         # self.canvas.rowconfigure(0, weight=1)
@@ -407,12 +427,14 @@ class ScrollableFrame(ttk.Frame):
         self.scrollable_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(
-                scrollregion=self.canvas.bbox("all")  # Wird aufgerufen wenn sich Inhalte ändern --> scrollregion wird
+                # Wird aufgerufen wenn sich Inhalte ändern --> scrollregion wird
+                scrollregion=self.canvas.bbox("all")
                 # aktualisiert
             )
         )
 
-        self.canvas_frame = self.canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.canvas_frame = self.canvas.create_window(
+            (0, 0), window=self.scrollable_frame, anchor="nw")
 
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
@@ -446,52 +468,56 @@ class GameFrame(ttk.Frame):
         container.rowconfigure(0, weight=1)
         container.columnconfigure(0, weight=1)
 
-        # canvas = tk.Canvas(self, bg="turquoise")
-
-        # self.game_frame = Frame(master=canvas, bg="yellow")
-        self.game_frame = Frame(master=container, bg="red")  # , bg="yellow")
+        self.game_frame = Frame(master=container, bg="red")
 
         self.game_frame.columnconfigure(0, weight=1)  # Image
         self.game_frame.columnconfigure(1, weight=1)  # Name, Platforms, Genre
         self.game_frame.columnconfigure(2, weight=1)  # Discount tag if needed
-        self.game_frame.columnconfigure(3, weight=1)  # Add/remove to/from cart Button
+        # Add/remove to/from cart Button
+        self.game_frame.columnconfigure(3, weight=1)
 
         self.game_frame.rowconfigure(0, weight=1)  # Name
         self.game_frame.rowconfigure(1, weight=1)  # Platforms
         self.game_frame.rowconfigure(2, weight=1)  # Genre
 
-        # canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
-
         self.img = ttk.Label(self.game_frame, image=game.img)
         self.img.grid(row=0, column=0, sticky="nsew", rowspan=3)
 
-        self.l_name = ttk.Label(self.game_frame, text=game.name, style="GameDesc.TLabel", background="blue")
+        self.l_name = ttk.Label(
+            self.game_frame, text=game.name, style="GameDesc.TLabel", background="blue")
         self.l_name.grid(row=0, column=1)
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
                                      background="blue")
         self.l_platforms.grid(row=1, column=1)
 
-        self.l_genre = ttk.Label(self.game_frame, text=game_str(game.genre), style="GameDesc.TLabel", background="blue")
+        self.l_genre = ttk.Label(self.game_frame, text=game_str(
+            game.genre), style="GameDesc.TLabel", background="blue")
         self.l_genre.grid(row=2, column=1)
 
         if game.discounted:
-            self.l_discounted = ttk.Label(self.game_frame, text="Rabatt", style="TB.TLabel", background="blue")
+            self.l_discounted = ttk.Label(
+                self.game_frame, text="Rabatt", style="TB.TLabel", background="blue")
             self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
 
         add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
-        remove_from_cart_icon = ImageTk.PhotoImage(Image.open("imgs/rmcart.png"))
+        remove_from_cart_icon = ImageTk.PhotoImage(
+            Image.open("imgs/rmcart.png"))
         if game.in_cart:
-            self.cart_icon = ttk.Label(self.game_frame, image=remove_from_cart_icon)
+            self.cart_icon = ttk.Label(
+                self.game_frame, image=remove_from_cart_icon)
             # self.l_manage_cart = ttk.Label(self.game_frame, text="Remove from cart", style="TB.TLabel")
             self.cart_icon.bind("<Button-1>", game.remove_from_cart)
+            self.cart_icon.image = remove_from_cart_icon
 
         else:
             self.cart_icon = ttk.Label(self.game_frame, image=add_to_cart_icon)
             # self.l_manage_cart = ttk.Label(self.game_frame, text="Add to cart", style="TB.TLabel")
             self.cart_icon.bind("<Button-1>", game.to_cart)
+            self.cart_icon.image = add_to_cart_icon
 
-        self.cart_icon.grid(row=0, column=3, rowspan=3, padx=10, pady=10, sticky="nsew")
+        self.cart_icon.grid(row=0, column=3, rowspan=3,
+                            padx=10, pady=10, sticky="nsew")
 
         self.game_frame.grid(column=0, sticky="nsew", padx=10, pady=10)
 
@@ -506,10 +532,13 @@ def main():
     # print(style.theme_names())
     # style.configure("C.TButton", foreground="white", background="black", relief="groove")
     # style.configure("TButton", foreground="green", background="black")
-    style.configure("TB.TLabel", foreground="white", background=pas_dark, anchor="center", font=('arial', 20))
+    style.configure("TB.TLabel", foreground="white",
+                    background=pas_dark, anchor="center", font=('arial', 20))
     style.configure(root, background=pas_dark, foreground="white")
-    style.configure("Sorting.TLabel", font=("arial", 12), background=pas_dark, anchor="center")
-    style.configure("FundsAmount.TLabel", font=('arial', 14), background=act_dark)
+    style.configure("Sorting.TLabel", font=("arial", 12),
+                    background=pas_dark, anchor="center")
+    style.configure("FundsAmount.TLabel", font=(
+        'arial', 14), background=act_dark)
     style.configure("GameDesc.TLabel", font=('arial', 14))
     dampf = Dampf(root, style)  # , get_balance())
     # canvas = Canvas(root, width=width, height=height)
