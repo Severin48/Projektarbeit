@@ -58,13 +58,13 @@ class Dampf:
         self.game_frames = []
 
         self.all_games.append(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
-                            ["Windows"], 0, "mw2.png"))
+                            ["Windows"], 0, "mw2.png", discounted=True))
 
         self.all_games.append(Game("Gegenschlag: Globale Offensive", 0, ["FPS", "Tactical shooter"],
-                            ["Windows", "Linux"], 101880, "cs.png", owned=True))
+                            ["Windows", "Linux"], 101880, "cs.png", owned=True, discounted=True))
 
         self.all_games.append(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
-                                 ["Windows", "Linux"], 48920, "tes5.png"))
+                                 ["Windows", "Linux"], 48920, "tes5.png", discounted=True))
 
         self.all_games.append(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
                                  ["Windows", "Linux"], 48920, "g2.png"))
@@ -420,23 +420,6 @@ class ScrollableFrame(ttk.Frame):
         scrollbar.pack(side="right", fill="y")
 
 
-# class GameFrame(ttk.Frame):
-#     def __init__(self, container, game, *args, **kwargs):
-#         super().__init__(container, *args, **kwargs)
-#         self.game = game
-#
-#         canvas = tk.Canvas(self)
-#
-#         self.game_frame = ttk.Frame(canvas)
-#
-#         self.game_frame.columnconfigure(0, weight=1) # Image
-#         self.game_frame.columnconfigure(1, weight=3) # Name, Platforms, Genre
-#         self.game_frame.columnconfigure(2, weight=1)
-#
-#         canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
-#
-#         canvas.pack(side="left", fill="both", expand=True)
-
 def game_str(platforms):
     ret = ""
     for platform in platforms:
@@ -459,7 +442,7 @@ class GameFrame(ttk.Frame):
         self.game_frame = Frame(master=container, bg="red")  # , bg="yellow")
 
         self.game_frame.columnconfigure(0, weight=1)  # Image
-        self.game_frame.columnconfigure(1, weight=3)  # Name, Platforms, Genre
+        self.game_frame.columnconfigure(1, weight=1)  # Name, Platforms, Genre
         self.game_frame.columnconfigure(2, weight=1)  # Discount tag if needed
         self.game_frame.columnconfigure(3, weight=1)  # Add/remove to/from cart Button
 
@@ -470,7 +453,7 @@ class GameFrame(ttk.Frame):
         # canvas.create_window((0, 0), window=self.game_frame, anchor="nw")
 
         self.img = ttk.Label(self.game_frame, image=game.img)
-        self.img.grid(row=0, column=0, sticky="nsew")
+        self.img.grid(row=0, column=0, sticky="nsew", rowspan=3)
 
         self.l_name = ttk.Label(self.game_frame, text=game.name, style="GameDesc.TLabel", background="blue")
         self.l_name.grid(row=0, column=1)
@@ -484,19 +467,21 @@ class GameFrame(ttk.Frame):
 
         if game.discounted:
             self.l_discounted = ttk.Label(self.game_frame, text="Rabatt", style="TB.TLabel", background="blue")
-            self.l_discounted.grid(row=1, column=2)
+            self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
 
-        self.fr_manage_cart = Frame(self.game_frame, bg="green")
-
+        add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
+        remove_from_cart_icon = ImageTk.PhotoImage(Image.open("imgs/rmcart.png"))
         if game.in_cart:
-            self.l_manage_cart = ttk.Label(self.fr_manage_cart, text="Remove from cart", style="TB.TLabel")
-            self.l_manage_cart.bind("<Button-1>", game.remove_from_cart)
-        else:
-            self.l_manage_cart = ttk.Label(self.fr_manage_cart, text="Add to cart", style="TB.TLabel")
-            self.l_manage_cart.bind("<Button-1>", game.to_cart)
+            self.cart_icon = ttk.Label(self.game_frame, image=remove_from_cart_icon)
+            # self.l_manage_cart = ttk.Label(self.game_frame, text="Remove from cart", style="TB.TLabel")
+            self.cart_icon.bind("<Button-1>", game.remove_from_cart)
 
-        self.l_manage_cart.grid()
-        self.fr_manage_cart.grid(row=1, column=3)
+        else:
+            self.cart_icon = ttk.Label(self.game_frame, image=add_to_cart_icon)
+            # self.l_manage_cart = ttk.Label(self.game_frame, text="Add to cart", style="TB.TLabel")
+            self.cart_icon.bind("<Button-1>", game.to_cart)
+
+        self.cart_icon.grid(row=0, column=3, rowspan=3, padx=10, pady=10)
 
         self.game_frame.grid(column=0, sticky="nsew", padx=10, pady=10)
 
