@@ -220,8 +220,8 @@ class Dampf:
         # ====================================== SHOP PAGE ======================================
 
         self.shop_page = Frame(master=self.mainframe, bg=pas_dark)
-        self.shop_page.columnconfigure(0, weight=6)
-        self.shop_page.columnconfigure(1, weight=4)
+        self.shop_page.columnconfigure(0, weight=7)  # Main section
+        self.shop_page.columnconfigure(1, weight=3)  # Cart section
         self.shop_page.rowconfigure(0, weight=1)
         self.shop_page.rowconfigure(1, weight=29)
 
@@ -239,8 +239,6 @@ class Dampf:
             # if game in self.shop_games:
             #     self.game_frames[i].grid()
 
-        self.cart = Frame(master=self.shop_page, bg="blue")
-
         self.sort_by_price_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Preis", width=20,
                                              style="Sorting.TLabel")
         self.sort_by_price_label.bind("<Button-1>", self.sort_by_price)
@@ -248,6 +246,18 @@ class Dampf:
         self.sort_shop_by_name_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Name", width=20,
                                                  style="Sorting.TLabel")
         self.sort_shop_by_name_label.bind("<Button-1>", self.sort_shop_by_name)
+
+        # =================== Cart section ===================
+
+        self.fr_cart = Frame(master=self.shop_page, bg="blue")
+
+        self.cart_desc = ttk.Label(self.fr_cart, text="In ihrem Warenkorb befinden sich\nfolgende Artikel:",
+                                   background="purple", width=30)
+
+        # https://stackoverflow.com/questions/29091747/set-tkinter-label-texts-as-elements-of-list
+        # TODO: Oder eine feste Menge (8) Labels, deren Texte nach einer Liste an Games im cart geändert werden.
+        #  Wenn mehr als 8 Spiele im Cart sind, werden zwei Buttons sichtbar, mit denen man die Seiten browsen kann.
+        #  Oder einfach leicht machen und mehr als genug Labels machen und nur manche davon befüllen.
 
         self.open_shop(event=None)  # Show the shop on launch
 
@@ -266,8 +276,6 @@ class Dampf:
             self.game_listings_frame.grid(
                 row=1, column=0, sticky='nsew', padx=20, pady=20)
 
-            self.cart.grid(row=1, column=1, sticky="wens")
-
             self.sort_by_price_label.grid(row=0, column=1, sticky="w")
 
             self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
@@ -277,6 +285,10 @@ class Dampf:
                     game_frame.grid()
                 else:
                     game_frame.grid_forget()
+
+            self.fr_cart.grid(row=1, column=1, sticky="wens")
+
+            self.cart_desc.grid()
 
             self.showing = "shop"
 
