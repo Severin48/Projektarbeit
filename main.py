@@ -468,7 +468,7 @@ class GameFrame(ttk.Frame):
         container.rowconfigure(0, weight=1)
         container.columnconfigure(0, weight=1)
 
-        self.game_frame = Frame(master=container, bg="red")
+        self.game_frame = Frame(master=container, bg=act_dark)
 
         self.game_frame.columnconfigure(0, weight=1)  # Image
         self.game_frame.columnconfigure(1, weight=1)  # Name, Platforms, Genre
@@ -485,34 +485,32 @@ class GameFrame(ttk.Frame):
 
         self.l_name = ttk.Label(
             self.game_frame, text=game.name, style="GameDesc.TLabel", background="blue")
-        self.l_name.grid(row=0, column=1)
+        self.l_name.grid(row=0, column=1, sticky="w")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
                                      background="blue")
-        self.l_platforms.grid(row=1, column=1)
+        self.l_platforms.grid(row=1, column=1, sticky="w")
 
         self.l_genre = ttk.Label(self.game_frame, text=game_str(
             game.genre), style="GameDesc.TLabel", background="blue")
-        self.l_genre.grid(row=2, column=1)
+        self.l_genre.grid(row=2, column=1, sticky="w")
 
         if game.discounted:
             self.l_discounted = ttk.Label(
-                self.game_frame, text="Rabatt", style="TB.TLabel", background="blue")
+                self.game_frame, text="%", style="TB.TLabel", background="blue")
             self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
 
         add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
         remove_from_cart_icon = ImageTk.PhotoImage(
             Image.open("imgs/rmcart.png"))
         if game.in_cart:
-            self.cart_icon = ttk.Label(
-                self.game_frame, image=remove_from_cart_icon)
-            # self.l_manage_cart = ttk.Label(self.game_frame, text="Remove from cart", style="TB.TLabel")
+            self.cart_icon = Label(
+                self.game_frame, image=remove_from_cart_icon, bg=act_dark)
             self.cart_icon.bind("<Button-1>", game.remove_from_cart)
             self.cart_icon.image = remove_from_cart_icon
 
         else:
-            self.cart_icon = ttk.Label(self.game_frame, image=add_to_cart_icon)
-            # self.l_manage_cart = ttk.Label(self.game_frame, text="Add to cart", style="TB.TLabel")
+            self.cart_icon = Label(self.game_frame, image=add_to_cart_icon, bg=act_dark)
             self.cart_icon.bind("<Button-1>", game.to_cart)
             self.cart_icon.image = add_to_cart_icon
 
@@ -520,8 +518,6 @@ class GameFrame(ttk.Frame):
                             padx=10, pady=10, sticky="nsew")
 
         self.game_frame.grid(column=0, sticky="nsew", padx=10, pady=10)
-
-        # canvas.pack(side="left", fill="both", expand=True)
 
 
 def main():
@@ -539,7 +535,7 @@ def main():
                     background=pas_dark, anchor="center")
     style.configure("FundsAmount.TLabel", font=(
         'arial', 14), background=act_dark)
-    style.configure("GameDesc.TLabel", font=('arial', 14))
+    style.configure("GameDesc.TLabel", font=('arial', 12))
     dampf = Dampf(root, style)  # , get_balance())
     # canvas = Canvas(root, width=width, height=height)
     # canvas.grid()
