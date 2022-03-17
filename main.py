@@ -220,8 +220,8 @@ class Dampf:
         # ====================================== SHOP PAGE ======================================
 
         self.shop_page = Frame(master=self.mainframe, bg=pas_dark)
-        self.shop_page.columnconfigure(0, weight=7)
-        self.shop_page.columnconfigure(1, weight=3)
+        self.shop_page.columnconfigure(0, weight=6)
+        self.shop_page.columnconfigure(1, weight=4)
         self.shop_page.rowconfigure(0, weight=1)
         self.shop_page.rowconfigure(1, weight=29)
 
@@ -480,24 +480,28 @@ class GameFrame(ttk.Frame):
         self.game_frame.rowconfigure(1, weight=1)  # Platforms
         self.game_frame.rowconfigure(2, weight=1)  # Genre
 
-        self.img = ttk.Label(self.game_frame, image=game.img, background=pas_dark)
+        self.img = ttk.Label(self.game_frame, image=game.img, background="green")
         self.img.grid(row=0, column=0, rowspan=3, sticky="w")
 
         self.l_name = ttk.Label(
-            self.game_frame, text=game.name, style="GameDesc.TLabel", background=act_dark)
+            self.game_frame, text=game.name, style="GameDesc.TLabel", anchor="w", background=act_dark, width=30)
         self.l_name.grid(row=0, column=1, sticky="w")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
-                                     background=act_dark)
+                                     background=act_dark, anchor="w")
         self.l_platforms.grid(row=1, column=1, sticky="w")
 
         self.l_genre = ttk.Label(self.game_frame, text=game_str(
-            game.genre), style="GameDesc.TLabel", background=act_dark)
+            game.genre), style="GameDesc.TLabel", background=act_dark, anchor="w")
         self.l_genre.grid(row=2, column=1, sticky="w")
 
         if game.discounted:
             self.l_discounted = ttk.Label(
                 self.game_frame, text="%", style="TB.TLabel", background=act_dark)
+            self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
+        else:
+            self.l_discounted = ttk.Label(
+                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground=act_dark)
             self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
 
         add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
