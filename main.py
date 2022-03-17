@@ -418,7 +418,7 @@ class ScrollableFrame(ttk.Frame):
         self.canvas = tk.Canvas(self, bg="purple")
         self.scrollbar = ttk.Scrollbar(
             self, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = Frame(self.canvas, bg="yellow")
+        self.scrollable_frame = Frame(self.canvas, bg=act_dark)
         # self.canvas.columnconfigure(0, weight=1)
         # self.canvas.rowconfigure(0, weight=1)
         # self.scrollable_frame.columnconfigure(0, weight=1)
@@ -480,24 +480,24 @@ class GameFrame(ttk.Frame):
         self.game_frame.rowconfigure(1, weight=1)  # Platforms
         self.game_frame.rowconfigure(2, weight=1)  # Genre
 
-        self.img = ttk.Label(self.game_frame, image=game.img)
-        self.img.grid(row=0, column=0, sticky="nsew", rowspan=3)
+        self.img = ttk.Label(self.game_frame, image=game.img, background=pas_dark)
+        self.img.grid(row=0, column=0, rowspan=3, sticky="w")
 
         self.l_name = ttk.Label(
-            self.game_frame, text=game.name, style="GameDesc.TLabel", background="blue")
+            self.game_frame, text=game.name, style="GameDesc.TLabel", background=act_dark)
         self.l_name.grid(row=0, column=1, sticky="w")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
-                                     background="blue")
+                                     background=act_dark)
         self.l_platforms.grid(row=1, column=1, sticky="w")
 
         self.l_genre = ttk.Label(self.game_frame, text=game_str(
-            game.genre), style="GameDesc.TLabel", background="blue")
+            game.genre), style="GameDesc.TLabel", background=act_dark)
         self.l_genre.grid(row=2, column=1, sticky="w")
 
         if game.discounted:
             self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background="blue")
+                self.game_frame, text="%", style="TB.TLabel", background=act_dark)
             self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
 
         add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
