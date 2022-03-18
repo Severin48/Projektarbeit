@@ -13,6 +13,51 @@ pas_dark = "#1f232a"
 
 # TODO: Typing
 
+dampf = None
+
+
+def main():
+    # root = Tk()
+    root = ThemedTk()
+    style = ttk.Style()
+    style.theme_use('clam')
+    # print(style.theme_names())
+    # style.configure("C.TButton", foreground="white", background="black", relief="groove")
+    # style.configure("TButton", foreground="green", background="black")
+    style.configure("TB.TLabel", foreground="white",
+                    background=pas_dark, anchor="center", font=('arial', 20))
+    style.configure(root, background=pas_dark, foreground="white")
+    style.configure("Sorting.TLabel", font=("arial", 12),
+                    background=pas_dark, anchor="center")
+    style.configure("FundsAmount.TLabel", font=(
+        'arial', 14), background=act_dark)
+    style.configure("GameDesc.TLabel", font=('arial', 12))
+    global dampf
+    dampf = Dampf(root, style)
+    # canvas = Canvas(root, width=width, height=height)
+    # canvas.grid()
+    # canvas.grid(columnspan=3)
+    # root.resizable(False, False) TODO: Wieder einsetzen?
+    win_size = str(width) + "x" + str(height)
+    root.geometry(win_size)
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
+    # root.grid_propagate(0) TODO: Wieder einsetzen?
+
+    root.mainloop()
+
+
+def add_to_cart(event, game):
+    game.in_cart = True
+    dampf.refresh_shop()
+    # TODO: Show bin icon on GameFrame
+
+
+def remove_from_cart(event, game):
+    game.in_cart = False
+    dampf.refresh_shop()
+    # TODO: Show addcart icon
+
 
 class Game:
     # TODO: Doc welche Einheiten/Typen z.B. Playtime in minuten
@@ -27,13 +72,8 @@ class Game:
         self.owned = owned
         self.img = ImageTk.PhotoImage(Image.open("imgs/" + img))
 
-    def to_cart(self, event):
-        print("Added {} to cart".format(self.name))
-        self.in_cart = True
-
-    def remove_from_cart(self, event):
-        print("Removed {} from cart".format(self.name))
-        self.in_cart = False
+    def __repr__(self):
+        return "Game_" + self.name
 
 
 # def get_balance():
@@ -52,16 +92,13 @@ class Dampf:
         master.title("Dampf")
         self.showing = ""
         self.all_games = []
-        self.shop_games = []
-        self.lib_games = []
-        self.cart_games = []
         self.game_frames = []
 
         self.all_games.append(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
                                    ["Windows"], 0, "mw2.png", discounted=True))
 
-        self.all_games.append(Game("Gegenschlag: Globale Offensive", 0, ["FPS", "Tactical shooter"],
-                                   ["Windows", "Linux"], 101880, "cs.png", owned=True, discounted=True))
+        self.all_games.append(Game("Gegenschlag: Globale Offensive", 0, ["Action", "Free to play"],
+                                   ["Windows", "Linux", "Mac"], 101880, "cs.png", owned=True, discounted=True))
 
         self.all_games.append(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
                                    ["Windows", "Linux"], 48920, "tes5.png", discounted=True))
@@ -69,13 +106,9 @@ class Dampf:
         self.all_games.append(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
                                    ["Windows", "Linux"], 48920, "g2.png"))
 
-        for game in self.all_games:
-            if not game.owned:
-                self.shop_games.append(game)
-            else:
-                self.lib_games.append(game)
+        self.all_games.append(Game("Zeitalter der Imperien III", 0, ["Strategie"],
+                                   ["Windows"], 48920, "aoe.png"))
 
-        # , width=width, height=height)
         self.mainframe = Frame(master=self.master, bg=pas_dark)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
         self.mainframe.rowconfigure(1, weight=29)  # Shop Listing & Cart
@@ -232,12 +265,13 @@ class Dampf:
 
         # for i, game in enumerate(self.all_games):
         for game in self.all_games:
-            temp_frame = GameFrame(
-                container=self.game_listings_frame.scrollable_frame, game=game)
-            self.game_frames.append(temp_frame)
-            temp_frame.grid(column=0, sticky="news")
-            # if game in self.shop_games:
-            #     self.game_frames[i].grid()
+            if not game.owned and not game.in_cart:
+                temp_frame = GameFrame(
+                    container=self.game_listings_frame.scrollable_frame, game=game)
+                self.game_frames.append(temp_frame)
+                temp_frame.grid(column=0, sticky="news")
+                # if game in self.shop_games:
+                #     self.game_frames[i].grid()
 
         self.sort_by_price_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Preis", width=20,
                                              style="Sorting.TLabel")
@@ -251,8 +285,16 @@ class Dampf:
 
         self.fr_cart = Frame(master=self.shop_page, bg="blue")
 
+        self.fr_cart.columnconfigure(0, weight=1)
+        self.fr_cart.rowconfigure(0, weight=1)
+
         self.cart_desc = ttk.Label(self.fr_cart, text="In ihrem Warenkorb befinden sich\nfolgende Artikel:",
                                    background="purple", width=30)
+
+        self.cart_labels = []
+        for i in range(10):
+            self.cart_labels.append(ttk.Label(self.fr_cart, text="No Game", background=act_dark, foreground=act_dark))
+            self.fr_cart.rowconfigure(i+1, weight=1)
 
         # https://stackoverflow.com/questions/29091747/set-tkinter-label-texts-as-elements-of-list
         # TODO: Oder eine feste Menge (8) Labels, deren Texte nach einer Liste an Games im cart geändert werden.
@@ -260,6 +302,28 @@ class Dampf:
         #  Oder einfach leicht machen und mehr als genug Labels machen und nur manche davon befüllen.
 
         self.open_shop(event=None)  # Show the shop on launch
+
+    def refresh_shop(self):
+        cart_games = []
+        shop_games = []
+        for game in self.all_games:
+            if game.in_cart:
+                cart_games.append(game)
+            elif not game.owned and not game.in_cart:
+                shop_games.append(game)
+
+        print("Cart games: ", cart_games)
+        print("Shop games: ", shop_games)
+        print("Game frames: ", self.game_frames)
+        for game_frame in self.game_frames:
+            if game_frame.game in shop_games:
+                game_frame.grid()
+            else:
+                game_frame.grid_forget()  # TODO: Game is not disappearing from shop
+
+        for i, game in enumerate(cart_games):
+            self.cart_labels[i].text = game.name
+            self.cart_labels[i].grid(column=0, row=i + 1)
 
     def open_shop(self, event):
         if self.showing != "shop":
@@ -280,15 +344,11 @@ class Dampf:
 
             self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
 
-            for game_frame in self.game_frames:
-                if game_frame.game in self.shop_games:
-                    game_frame.grid()
-                else:
-                    game_frame.grid_forget()
-
             self.fr_cart.grid(row=1, column=1, sticky="wens")
 
-            self.cart_desc.grid()
+            self.cart_desc.grid(column=0, row=0)
+
+            self.refresh_shop()
 
             self.showing = "shop"
 
@@ -311,15 +371,15 @@ class Dampf:
         self.game_library_frame.grid(
             row=1, column=0, sticky='nsew', padx=20, pady=20)
 
-        for game_frame in self.game_frames:
-            if game_frame.game in self.lib_games:
-                # game_frame.container = # TODO: Man kann container nicht im Nachhinein ändern, deshalb müssen alle
-                #  GameFrames auf beiden Seiten erstellt werden aber wie z.B.
-                # wenn ein Game rausgenommen wird und neue Reihenfolge dort ist? Ordnen sie sich neu?
-                # TODO: CSGO wird nicht in LIB angezeigt
-                game_frame.grid()
-            else:
-                game_frame.grid_forget()
+        # for game_frame in self.game_frames:
+        #     if game_frame.game in self.lib_games:
+        #         # game_frame.container = # TODO: Man kann container nicht im Nachhinein ändern, deshalb müssen alle
+        #         #  GameFrames auf beiden Seiten erstellt werden aber wie z.B.
+        #         # wenn ein Game rausgenommen wird und neue Reihenfolge dort ist? Ordnen sie sich neu?
+        #         # TODO: CSGO wird nicht in LIB angezeigt
+        #         game_frame.grid()
+        #     else:
+        #         game_frame.grid_forget()
 
         self.showing = "lib"
 
@@ -509,11 +569,11 @@ class GameFrame(ttk.Frame):
 
         if game.discounted:
             self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background=act_dark)
+                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green")
             self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
         else:
             self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground=act_dark)
+                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green")
             self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
 
         add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
@@ -522,12 +582,14 @@ class GameFrame(ttk.Frame):
         if game.in_cart:
             self.cart_icon = Label(
                 self.game_frame, image=remove_from_cart_icon, bg=act_dark)
-            self.cart_icon.bind("<Button-1>", game.remove_from_cart)
+            self.cart_icon.bind("<Button-1>", lambda event,
+                                                     g=game: remove_from_cart(event, g))
             self.cart_icon.image = remove_from_cart_icon
 
         else:
             self.cart_icon = Label(self.game_frame, image=add_to_cart_icon, bg=act_dark)
-            self.cart_icon.bind("<Button-1>", game.to_cart)
+            self.cart_icon.bind("<Button-1>", lambda event,
+                                                     g=game: add_to_cart(event, g))
             self.cart_icon.image = add_to_cart_icon
 
         self.cart_icon.grid(row=0, column=3, rowspan=3,
@@ -535,35 +597,8 @@ class GameFrame(ttk.Frame):
 
         self.game_frame.grid(column=0, sticky="nsew", padx=10, pady=10)
 
-
-def main():
-    # root = Tk()
-    root = ThemedTk()
-    style = ttk.Style()
-    style.theme_use('clam')
-    # print(style.theme_names())
-    # style.configure("C.TButton", foreground="white", background="black", relief="groove")
-    # style.configure("TButton", foreground="green", background="black")
-    style.configure("TB.TLabel", foreground="white",
-                    background=pas_dark, anchor="center", font=('arial', 20))
-    style.configure(root, background=pas_dark, foreground="white")
-    style.configure("Sorting.TLabel", font=("arial", 12),
-                    background=pas_dark, anchor="center")
-    style.configure("FundsAmount.TLabel", font=(
-        'arial', 14), background=act_dark)
-    style.configure("GameDesc.TLabel", font=('arial', 12))
-    dampf = Dampf(root, style)  # , get_balance())
-    # canvas = Canvas(root, width=width, height=height)
-    # canvas.grid()
-    # canvas.grid(columnspan=3)
-    # root.resizable(False, False) TODO: Wieder einsetzen?
-    win_size = str(width) + "x" + str(height)
-    root.geometry(win_size)
-    root.columnconfigure(0, weight=1)
-    root.rowconfigure(0, weight=1)
-    # root.grid_propagate(0) TODO: Wieder einsetzen?
-
-    root.mainloop()
+    def __repr__(self):
+        return "GameFrame_" + self.game.name
 
 
 if __name__ == '__main__':
