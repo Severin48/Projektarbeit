@@ -169,8 +169,9 @@ class Dampf:
 
         self.fr_balance_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_balance_label.grid(row=0, column=4, sticky="E", padx=5, pady=5)
+        balance_str = str(self.get_balance()) + "€"
         self.balance_label = ttk.Label(
-            self.fr_balance_label, text=str(self.get_balance()) + "€")
+            self.fr_balance_label, text=balance_str)
         self.balance_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
         self.balance_label.bind("<Button-1>", self.open_funds)
 
@@ -329,7 +330,7 @@ class Dampf:
         for g in self.all_games:
             if g.in_cart:
                 price_sum += g.price
-        return price_sum
+        return round(price_sum, 2)
 
     def clear_cart(self, event):
         for g in self.all_games:
@@ -346,6 +347,7 @@ class Dampf:
                     g.in_cart = False
                     remove_from_cart(None, g)
                     g.owned = True
+            self.balance -= price_sum
             self.refresh_shop()
         else:
             self.open_funds(event)
@@ -392,6 +394,9 @@ class Dampf:
             self.l_total_sum.configure(text=cart_sum_str)
             self.l_buy_cart.grid(row=len(cart_games)+2, column=0)
             self.l_clear_cart.grid(row=len(cart_games)+2, column=1)
+
+        balance_str = str(self.get_balance()) + "€"
+        self.balance_label.config(text=balance_str)
 
     def open_shop(self, event):
         if self.showing != "shop":
