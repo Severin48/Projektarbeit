@@ -6,7 +6,7 @@ from PIL import ImageTk, Image
 
 width = 900  # 720
 height = 600  # 512
-small = height/20
+small = height / 20
 
 act_dark = "#2d384b"
 pas_dark = "#1f232a"
@@ -47,21 +47,31 @@ def main():
     root.mainloop()
 
 
-def add_to_cart(event, game):
+def add_to_cart(event, game, gf):
+    print("Adding to cart: ", game.handle)
     game.in_cart = True
+    gf.cart_icon.configure(image=gf.remove_from_cart_icon)
+    gf.cart_icon.image = gf.remove_from_cart_icon
+
+    # gf.cart_icon.grid(row=0, column=3, rowspan=3,
+    #                   padx=10, pady=10, sticky="nsew")
     dampf.refresh_shop()
-    # TODO: Show bin icon on GameFrame
 
 
-def remove_from_cart(event, game):
+def remove_from_cart(event, game, gf):
+    print("Removing from cart: ", game.handle)
     game.in_cart = False
+    gf.cart_icon.configure(image=gf.add_to_cart_icon)
+    gf.cart_icon.image = gf.add_to_cart_icon
+
+    # gf.cart_icon.grid(row=0, column=3, rowspan=3,
+    #                   padx=10, pady=10, sticky="nsew")
     dampf.refresh_shop()
-    # TODO: Show addcart icon
 
 
 class Game:
     # TODO: Doc welche Einheiten/Typen z.B. Playtime in minuten
-    def __init__(self, name, price, genre, platforms, playtime, img, owned=False, discounted=False):
+    def __init__(self, name, price, genre, platforms, playtime, img, handle, owned=False, discounted=False):
         self.name = name
         self.price = price
         self.genre = genre
@@ -71,15 +81,11 @@ class Game:
         self.in_cart = False
         self.owned = owned
         self.img = ImageTk.PhotoImage(Image.open("imgs/" + img))
+        self.handle = handle
 
     def __repr__(self):
         return "Game_" + self.name
 
-
-# def get_balance():
-#     # balance = 1.60384572
-#     balance = round(balance, 2)
-#     return '{:.2f}'.format(balance)
 
 # TODO: Wenn genug Funds vorhanden sind nicht auf AddFundsPage
 
@@ -95,19 +101,20 @@ class Dampf:
         self.game_frames = []
 
         self.all_games.append(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
-                                   ["Windows"], 0, "mw2.png", discounted=True))
+                                   ["Windows"], 0, "mw2.png", discounted=True, handle="MW2"))
 
         self.all_games.append(Game("Gegenschlag: Globale Offensive", 0, ["Action", "Free to play"],
-                                   ["Windows", "Linux", "Mac"], 101880, "cs.png", owned=True, discounted=True))
+                                   ["Windows", "Linux", "Mac"], 101880, "cs.png", owned=True, discounted=True,
+                                   handle="CSGO"))
 
         self.all_games.append(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
-                                   ["Windows", "Linux"], 48920, "tes5.png", discounted=True))
+                                   ["Windows", "Linux"], 48920, "tes5.png", discounted=True, handle="TES V"))
 
         self.all_games.append(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
-                                   ["Windows", "Linux"], 48920, "g2.png"))
+                                   ["Windows", "Linux"], 48920, "g2.png", handle="G2: DndR"))
 
         self.all_games.append(Game("Zeitalter der Imperien III", 0, ["Strategie"],
-                                   ["Windows"], 48920, "aoe.png"))
+                                   ["Windows"], 48920, "aoe.png", handle="AoE III"))
 
         self.mainframe = Frame(master=self.master, bg=pas_dark)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
@@ -115,18 +122,14 @@ class Dampf:
         self.mainframe.columnconfigure(0, weight=1)
         self.mainframe.grid(row=0, column=0, sticky="WENS")
 
-        top_bar_height = small
         self.top_bar = Frame(master=self.mainframe, bg=pas_dark)
-        # self.top_bar.grid_columnconfigure(2, minsize=width)
         self.top_bar.columnconfigure(0, weight=2)
         self.top_bar.columnconfigure(1, weight=2)
         self.top_bar.columnconfigure(2, weight=14)
         self.top_bar.columnconfigure(3, weight=1)
         self.top_bar.columnconfigure(4, weight=1)
-        # self.top_bar.grid_rowconfigure(0, weight=1, height=top_bar_height)
         self.top_bar.rowconfigure(0, weight=1)
         self.top_bar.grid(row=0, column=0, sticky="WENS")
-        # self.top_bar.grid(row=0, column=0, columnspan=2, sticky="WENS")
         # TODO: Shop contents col=0, cart col=1 --> Analog bei Lib
 
         self.fr_shop_label = Frame(master=self.top_bar, bg=pas_dark)
@@ -269,7 +272,7 @@ class Dampf:
                 temp_frame = GameFrame(
                     container=self.game_listings_frame.scrollable_frame, game=game)
                 self.game_frames.append(temp_frame)
-                temp_frame.grid(column=0, sticky="news")
+                # temp_frame.grid(column=0, sticky="news")
                 # if game in self.shop_games:
                 #     self.game_frames[i].grid()
 
@@ -293,8 +296,9 @@ class Dampf:
 
         self.cart_labels = []
         for i in range(10):
-            self.cart_labels.append(ttk.Label(self.fr_cart, text="No Game", background=act_dark, foreground=act_dark))
-            self.fr_cart.rowconfigure(i+1, weight=1)
+            self.cart_labels.append(ttk.Label(
+                self.fr_cart, text="No Game", background=act_dark, foreground=act_dark))
+            self.fr_cart.rowconfigure(i + 1, weight=1)
 
         # https://stackoverflow.com/questions/29091747/set-tkinter-label-texts-as-elements-of-list
         # TODO: Oder eine feste Menge (8) Labels, deren Texte nach einer Liste an Games im cart geändert werden.
@@ -309,17 +313,17 @@ class Dampf:
         for game in self.all_games:
             if game.in_cart:
                 cart_games.append(game)
-            elif not game.owned and not game.in_cart:
+            if not game.owned:  # and not game.in_cart:
                 shop_games.append(game)
 
-        print("Cart games: ", cart_games)
-        print("Shop games: ", shop_games)
-        print("Game frames: ", self.game_frames)
+        # print("Cart games: ", cart_games)
+        # print("Shop games: ", shop_games)
+        # print("Game frames: ", self.game_frames)
         for game_frame in self.game_frames:
             if game_frame.game in shop_games:
-                game_frame.grid()
+                game_frame.game_frame.grid()
             else:
-                game_frame.grid_forget()  # TODO: Game is not disappearing from shop
+                game_frame.game_frame.grid_forget()
 
         for i, game in enumerate(cart_games):
             self.cart_labels[i].text = game.name
@@ -552,7 +556,8 @@ class GameFrame(ttk.Frame):
         self.game_frame.rowconfigure(1, weight=1)  # Platforms
         self.game_frame.rowconfigure(2, weight=1)  # Genre
 
-        self.img = ttk.Label(self.game_frame, image=game.img, background="green")
+        self.img = ttk.Label(
+            self.game_frame, image=game.img, background="green")
         self.img.grid(row=0, column=0, rowspan=3, sticky="w")
 
         self.l_name = ttk.Label(
@@ -576,21 +581,22 @@ class GameFrame(ttk.Frame):
                 self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green")
             self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
 
-        add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
-        remove_from_cart_icon = ImageTk.PhotoImage(
+        self.add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
+        self.remove_from_cart_icon = ImageTk.PhotoImage(
             Image.open("imgs/rmcart.png"))
         if game.in_cart:
             self.cart_icon = Label(
-                self.game_frame, image=remove_from_cart_icon, bg=act_dark)
+                self.game_frame, image=self.remove_from_cart_icon, bg=act_dark)
             self.cart_icon.bind("<Button-1>", lambda event,
-                                                     g=game: remove_from_cart(event, g))
-            self.cart_icon.image = remove_from_cart_icon
+                                g=game: remove_from_cart(event, g, self))
+            self.cart_icon.image = self.remove_from_cart_icon
 
         else:
-            self.cart_icon = Label(self.game_frame, image=add_to_cart_icon, bg=act_dark)
+            self.cart_icon = Label(
+                self.game_frame, image=self.add_to_cart_icon, bg=act_dark)
             self.cart_icon.bind("<Button-1>", lambda event,
-                                                     g=game: add_to_cart(event, g))
-            self.cart_icon.image = add_to_cart_icon
+                                g=game: add_to_cart(event, g, self))
+            self.cart_icon.image = self.add_to_cart_icon
 
         self.cart_icon.grid(row=0, column=3, rowspan=3,
                             padx=10, pady=10, sticky="nsew")
