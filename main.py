@@ -48,24 +48,26 @@ def main():
 
 
 def add_to_cart(event, game, gf):
-    print("Adding to cart: ", game.handle)
+    # print("Adding to cart: ", game.handle)
     game.in_cart = True
     gf.cart_icon.configure(image=gf.remove_from_cart_icon)
     gf.cart_icon.image = gf.remove_from_cart_icon
 
-    # gf.cart_icon.grid(row=0, column=3, rowspan=3,
-    #                   padx=10, pady=10, sticky="nsew")
+    gf.cart_icon.bind("<Button-1>", lambda e,
+                      g=game: remove_from_cart(e, g, gf))
+
     dampf.refresh_shop()
 
 
 def remove_from_cart(event, game, gf):
-    print("Removing from cart: ", game.handle)
+    # print("Removing from cart: ", game.handle)
     game.in_cart = False
     gf.cart_icon.configure(image=gf.add_to_cart_icon)
     gf.cart_icon.image = gf.add_to_cart_icon
 
-    # gf.cart_icon.grid(row=0, column=3, rowspan=3,
-    #                   padx=10, pady=10, sticky="nsew")
+    gf.cart_icon.bind("<Button-1>", lambda e,
+                      g=game: add_to_cart(e, g, gf))
+
     dampf.refresh_shop()
 
 
@@ -82,6 +84,7 @@ class Game:
         self.owned = owned
         self.img = ImageTk.PhotoImage(Image.open("imgs/" + img))
         self.handle = handle
+        self.game_frame = None
 
     def __repr__(self):
         return "Game_" + self.name
@@ -266,15 +269,11 @@ class Dampf:
         # TODO: Scrollable mit mousewheel machen
         self.game_listings_frame = ScrollableFrame(container=self.shop_page)
 
-        # for i, game in enumerate(self.all_games):
         for game in self.all_games:
             if not game.owned and not game.in_cart:
                 temp_frame = GameFrame(
                     container=self.game_listings_frame.scrollable_frame, game=game)
                 self.game_frames.append(temp_frame)
-                # temp_frame.grid(column=0, sticky="news")
-                # if game in self.shop_games:
-                #     self.game_frames[i].grid()
 
         self.sort_by_price_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Preis", width=20,
                                              style="Sorting.TLabel")
@@ -292,13 +291,21 @@ class Dampf:
         self.fr_cart.rowconfigure(0, weight=1)
 
         self.cart_desc = ttk.Label(self.fr_cart, text="In ihrem Warenkorb befinden sich\nfolgende Artikel:",
-                                   background="purple", width=30)
+                                   background=act_dark, width=30)
 
         self.cart_labels = []
+        self.cart_delete_labels = []
         for i in range(10):
             self.cart_labels.append(ttk.Label(
                 self.fr_cart, text="No Game", background=act_dark, foreground=act_dark))
             self.fr_cart.rowconfigure(i + 1, weight=1)
+            self.cart_delete_labels.append(ttk.Label(self.fr_cart,
+                                                     text="Löschen", background=act_dark))
+
+        # TODO:
+        # self.clear_cart
+        #
+        # self.buy_cart
 
         # https://stackoverflow.com/questions/29091747/set-tkinter-label-texts-as-elements-of-list
         # TODO: Oder eine feste Menge (8) Labels, deren Texte nach einer Liste an Games im cart geändert werden.
@@ -325,9 +332,17 @@ class Dampf:
             else:
                 game_frame.game_frame.grid_forget()
 
+        for cl in self.cart_labels:
+            cl.grid_forget()
+        for cdl in self.cart_delete_labels:
+            cdl.grid_forget()
+
         for i, game in enumerate(cart_games):
-            self.cart_labels[i].text = game.name
             self.cart_labels[i].grid(column=0, row=i + 1)
+            self.cart_labels[i].configure(text=game.name, foreground="white")
+            self.cart_delete_labels[i].grid(column=1, row=i + 1)
+            self.cart_delete_labels[i].bind("<Button-1>", lambda e, g=game,
+                                            gf=game.game_frame: remove_from_cart(e, g, gf))
 
     def open_shop(self, event):
         if self.showing != "shop":
@@ -540,6 +555,7 @@ class GameFrame(ttk.Frame):
     def __init__(self, container, game, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
         self.game = game
+        game.game_frame = self
 
         container.rowconfigure(0, weight=1)
         container.columnconfigure(0, weight=1)
@@ -557,7 +573,7 @@ class GameFrame(ttk.Frame):
         self.game_frame.rowconfigure(2, weight=1)  # Genre
 
         self.img = ttk.Label(
-            self.game_frame, image=game.img, background="green")
+            self.game_frame, image=game.img, background=act_dark)
         self.img.grid(row=0, column=0, rowspan=3, sticky="w")
 
         self.l_name = ttk.Label(
@@ -581,7 +597,8 @@ class GameFrame(ttk.Frame):
                 self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green")
             self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
 
-        self.add_to_cart_icon = ImageTk.PhotoImage(Image.open("imgs/addcart.png"))
+        self.add_to_cart_icon = ImageTk.PhotoImage(
+            Image.open("imgs/addcart.png"))
         self.remove_from_cart_icon = ImageTk.PhotoImage(
             Image.open("imgs/rmcart.png"))
         if game.in_cart:
