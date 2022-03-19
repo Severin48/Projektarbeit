@@ -288,7 +288,7 @@ class Dampf:
 
         # =================== Cart section ===================
 
-        self.fr_cart = Frame(master=self.shop_page, bg="blue")
+        self.fr_cart = Frame(master=self.shop_page, bg=act_dark)
 
         self.fr_cart.columnconfigure(0, weight=1)
         self.fr_cart.rowconfigure(0, weight=1)
@@ -303,13 +303,13 @@ class Dampf:
                 self.fr_cart, text="No Game", background=act_dark, foreground=act_dark))
             self.fr_cart.rowconfigure(i + 1, weight=1)
             self.cart_delete_labels.append(ttk.Label(self.fr_cart,
-                                                     text="Löschen", background=act_dark))
+                                                     text="Löschen", background=pas_dark))
 
         # TODO:
-        self.l_clear_cart = ttk.Label(self.fr_cart, text="Warenkorb löschen", background=act_dark)
+        self.l_clear_cart = ttk.Label(self.fr_cart, text="Warenkorb löschen", background=pas_dark)
         self.l_clear_cart.bind("<Button-1>", self.clear_cart)
 
-        self.l_buy_cart = ttk.Label(self.fr_cart, text="Kaufen", background=act_dark)
+        self.l_buy_cart = ttk.Label(self.fr_cart, text="Kaufen", background="green")
         self.l_buy_cart.bind("<Button-1>", self.buy_cart)
         # TODO: In buy cart clear cart aufrufen? Aber zusätzlich
         #  games auf owned setzen vorher
@@ -371,7 +371,7 @@ class Dampf:
             self.cart_labels[i].configure(text=game.name, foreground="white")
             self.cart_delete_labels[i].grid(column=1, row=i + 1, sticky="e")
             self.cart_delete_labels[i].bind("<Button-1>", lambda e, g=game,
-                                            gf=game.game_frame: remove_from_cart(e, g, gf))
+                                            gf=game.game_frame: remove_from_cart(e, g))
 
         if len(cart_games) == 0:
             self.cart_desc.configure(text="Ihr Warenkorb ist leer.")
