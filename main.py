@@ -109,7 +109,7 @@ class Dampf:
         self.game_frames = []
 
         self.all_games.append(Game("Ruf der Pflicht:\nModerne Kriegskunst 2", ["First-person shooter", "Action"],
-                                   ["Windows"], "mw2.png", discounted=True, handle="MW2", price=59.99, playtime=0))
+                                   ["Windows"], "mw2.png", discounted=True, handle="MW2", price=19.99, playtime=0))
 
         self.all_games.append(Game("Gegenschlag:\nGlobale Offensive", ["Action", "Free to play"],
                                    ["Windows", "Linux", "Mac"], "cs.png", discounted=True,
@@ -117,13 +117,13 @@ class Dampf:
 
         self.all_games.append(Game("Die Älteren Rollen:\nHimmelsrand", ["RPG", "Fantasy"],
                                    ["Windows", "Linux"], "tes5.png", discounted=True,
-                                   handle="TES V", price=19.99, playtime=48920))
+                                   handle="TES V", price=39.99, playtime=48920))
 
         self.all_games.append(Game("Gothisch 2:\nDie Nacht des Raben", ["RPG", "Fantasy"],
-                                   ["Windows", "Linux"], "g2.png", handle="G2: DndR", price=4.99, playtime=48920))
+                                   ["Windows", "Linux"], "g2.png", handle="G2: DndR", price=9.99, playtime=48920))
 
         self.all_games.append(Game("Zeitalter der Imperien III", ["Strategie"],
-                                   ["Windows"], "aoe.png", handle="AoE III", price=9.99, playtime=48920))
+                                   ["Windows"], "aoe.png", handle="AoE III", price=19.99, playtime=48920))
 
         self.mainframe = Frame(master=self.master, bg=pas_dark)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
