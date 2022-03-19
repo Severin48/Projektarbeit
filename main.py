@@ -31,7 +31,10 @@ def main():
                     background=pas_dark, anchor="center")
     style.configure("FundsAmount.TLabel", font=(
         'arial', 14), background=act_dark)
-    style.configure("GameDesc.TLabel", font=('arial', 12))
+    style.configure("GameName.TLabel", background=pas_dark, anchor="center", font=('arial', 16, "bold"))
+    style.configure("GameDesc.TLabel", background=pas_dark, anchor="center", font=('arial', 14))
+    style.configure("PriceTag.TLabel", font=('arial', 12))
+
     global dampf
     dampf = Dampf(root, style)
     # canvas = Canvas(root, width=width, height=height)
@@ -289,6 +292,7 @@ class Dampf:
         # =================== Cart section ===================
 
         self.fr_cart = Frame(master=self.shop_page, bg=act_dark)
+        self.fr_cart.grid_propagate(False)
 
         self.fr_cart.columnconfigure(0, weight=1)
         self.fr_cart.rowconfigure(0, weight=1)
@@ -619,7 +623,7 @@ class GameFrame(ttk.Frame):
         self.img.grid(row=0, column=0, rowspan=3, sticky="w")
 
         self.l_name = ttk.Label(
-            self.game_frame, text=game.name, style="GameDesc.TLabel", anchor="w", background=act_dark, width=30)
+            self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background=act_dark, width=30)
         self.l_name.grid(row=0, column=1, sticky="w")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
@@ -657,8 +661,17 @@ class GameFrame(ttk.Frame):
                                 g=game: add_to_cart(event, g))
             self.cart_icon.image = self.add_to_cart_icon
 
-        self.cart_icon.grid(row=0, column=3, rowspan=3,
+        self.cart_icon.grid(row=1, column=3, rowspan=2,
                             padx=10, pady=10, sticky="nsew")
+
+        if game.price == 0:
+            price_str = "Free to play"
+        else:
+            price_str = str(game.price) + "€"
+        self.price_tag = ttk.Label(
+                self.game_frame, text=price_str, style="PriceTag.TLabel", background=act_dark, foreground="white")
+
+        self.price_tag.grid(row=0, column=3)
 
         self.game_frame.grid(column=0, sticky="nsew", padx=10, pady=10)
 
