@@ -31,8 +31,8 @@ def main():
                     background=pas_dark, anchor="center")
     style.configure("FundsAmount.TLabel", font=(
         'arial', 14), background=act_dark)
-    style.configure("GameName.TLabel", background=pas_dark, anchor="center", font=('arial', 16, "bold"))
-    style.configure("GameDesc.TLabel", background=pas_dark, anchor="center", font=('arial', 14))
+    style.configure("GameName.TLabel", background=pas_dark, anchor="center", font=('arial', 12, "bold"))
+    style.configure("GameDesc.TLabel", background=pas_dark, anchor="center", font=('arial', 10))
     style.configure("PriceTag.TLabel", font=('arial', 12))
 
     global dampf
@@ -292,13 +292,12 @@ class Dampf:
         # =================== Cart section ===================
 
         self.fr_cart = Frame(master=self.shop_page, bg=act_dark)
-        self.fr_cart.grid_propagate(False)
 
         self.fr_cart.columnconfigure(0, weight=1)
         self.fr_cart.rowconfigure(0, weight=1)
 
         self.cart_desc = ttk.Label(self.fr_cart, text="In ihrem Warenkorb befinden sich\nfolgende Spiele:",
-                                   background=act_dark, width=30)
+                                   background=act_dark, width=38)
 
         self.cart_labels = []
         self.cart_delete_labels = []
@@ -371,14 +370,14 @@ class Dampf:
             cdl.grid_forget()
 
         for i, game in enumerate(cart_games):
-            self.cart_labels[i].grid(column=0, row=i + 1, sticky="w")
-            self.cart_labels[i].configure(text=game.name, foreground="white")
+            self.cart_labels[i].grid(column=0, row=i + 1)
+            self.cart_labels[i].configure(text=game.name, foreground="white", background="purple")
             self.cart_delete_labels[i].grid(column=1, row=i + 1, sticky="e")
             self.cart_delete_labels[i].bind("<Button-1>", lambda e, g=game,
                                             gf=game.game_frame: remove_from_cart(e, g))
 
         if len(cart_games) == 0:
-            self.cart_desc.configure(text="Ihr Warenkorb ist leer.")
+            self.cart_desc.configure(text="Ihr Warenkorb ist leer.", anchor="center")
             self.l_buy_cart.grid_forget()
             self.l_clear_cart.grid_forget()
         else:
@@ -623,7 +622,7 @@ class GameFrame(ttk.Frame):
         self.img.grid(row=0, column=0, rowspan=3, sticky="w")
 
         self.l_name = ttk.Label(
-            self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background=act_dark, width=30)
+            self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background=act_dark)
         self.l_name.grid(row=0, column=1, sticky="w")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
@@ -636,12 +635,12 @@ class GameFrame(ttk.Frame):
 
         if game.discounted:
             self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green")
-            self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
+                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green", anchor="center")
+            self.l_discounted.grid(row=1, column=2)
         else:
             self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green")
-            self.l_discounted.grid(row=1, column=2, padx=10, pady=10)
+                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green", anchor="center")
+            self.l_discounted.grid(row=1, column=2)
 
         self.add_to_cart_icon = ImageTk.PhotoImage(
             Image.open("imgs/addcart.png"))
@@ -661,8 +660,7 @@ class GameFrame(ttk.Frame):
                                 g=game: add_to_cart(event, g))
             self.cart_icon.image = self.add_to_cart_icon
 
-        self.cart_icon.grid(row=1, column=3, rowspan=2,
-                            padx=10, pady=10, sticky="nsew")
+        self.cart_icon.grid(row=1, column=3, rowspan=2, sticky="nsew")
 
         if game.price == 0:
             price_str = "Free to play"
@@ -673,7 +671,7 @@ class GameFrame(ttk.Frame):
 
         self.price_tag.grid(row=0, column=3)
 
-        self.game_frame.grid(column=0, sticky="nsew", padx=10, pady=10)
+        self.game_frame.grid(column=0, sticky="nsew")
 
     def __repr__(self):
         return "GameFrame_" + self.game.name
