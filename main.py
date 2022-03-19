@@ -375,7 +375,7 @@ class Dampf:
 
         for i, game in enumerate(cart_games):
             self.cart_labels[i].grid(column=0, row=i + 1)
-            self.cart_labels[i].configure(text=game.name, foreground="white", background="purple")
+            self.cart_labels[i].configure(text=game.name, foreground="white", background=act_dark)
             self.cart_delete_labels[i].grid(column=1, row=i + 1, sticky="e")
             self.cart_delete_labels[i].bind("<Button-1>", lambda e, g=game,
                                             gf=game.game_frame: remove_from_cart(e, g))
@@ -415,12 +415,6 @@ class Dampf:
             self.fr_cart.grid(row=1, column=1, sticky="wens")
 
             self.cart_desc.grid(column=0, row=0, columnspan=2)
-
-            # self.l_total_sum.grid()
-
-            # self.l_buy_cart.grid(row=1, column=0)
-            #
-            # self.l_clear_cart.grid(row=1, column=1)
 
             self.refresh_shop()
 
