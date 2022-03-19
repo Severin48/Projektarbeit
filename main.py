@@ -47,33 +47,35 @@ def main():
     root.mainloop()
 
 
-def add_to_cart(event, game, gf):
+def add_to_cart(event, game):
     # print("Adding to cart: ", game.handle)
     game.in_cart = True
+    gf = game.game_frame
     gf.cart_icon.configure(image=gf.remove_from_cart_icon)
     gf.cart_icon.image = gf.remove_from_cart_icon
 
     gf.cart_icon.bind("<Button-1>", lambda e,
-                      g=game: remove_from_cart(e, g, gf))
+                      g=game: remove_from_cart(e, g))
 
     dampf.refresh_shop()
 
 
-def remove_from_cart(event, game, gf):
+def remove_from_cart(event, game):
     # print("Removing from cart: ", game.handle)
     game.in_cart = False
+    gf = game.game_frame
     gf.cart_icon.configure(image=gf.add_to_cart_icon)
     gf.cart_icon.image = gf.add_to_cart_icon
 
     gf.cart_icon.bind("<Button-1>", lambda e,
-                      g=game: add_to_cart(e, g, gf))
+                      g=game: add_to_cart(e, g))
 
     dampf.refresh_shop()
 
 
 class Game:
     # TODO: Doc welche Einheiten/Typen z.B. Playtime in minuten
-    def __init__(self, name, price, genre, platforms, playtime, img, handle, owned=False, discounted=False):
+    def __init__(self, name, genre, platforms, img, handle, owned=False, discounted=False, price=0, playtime=0):
         self.name = name
         self.price = price
         self.genre = genre
@@ -103,21 +105,22 @@ class Dampf:
         self.all_games = []
         self.game_frames = []
 
-        self.all_games.append(Game("Ruf der Pflicht: Moderne Kriegskunst 2", 59.99, ["First-person shooter", "Action"],
-                                   ["Windows"], 0, "mw2.png", discounted=True, handle="MW2"))
+        self.all_games.append(Game("Ruf der Pflicht:\nModerne Kriegskunst 2", ["First-person shooter", "Action"],
+                                   ["Windows"], "mw2.png", discounted=True, handle="MW2", price=59.99, playtime=0))
 
-        self.all_games.append(Game("Gegenschlag: Globale Offensive", 0, ["Action", "Free to play"],
-                                   ["Windows", "Linux", "Mac"], 101880, "cs.png", owned=True, discounted=True,
-                                   handle="CSGO"))
+        self.all_games.append(Game("Gegenschlag:\nGlobale Offensive", ["Action", "Free to play"],
+                                   ["Windows", "Linux", "Mac"], "cs.png", discounted=True,
+                                   handle="CSGO", playtime=101880))
 
-        self.all_games.append(Game("Die Älteren Rollen: Himmelsrand", 0, ["RPG", "Fantasy"],
-                                   ["Windows", "Linux"], 48920, "tes5.png", discounted=True, handle="TES V"))
+        self.all_games.append(Game("Die Älteren Rollen:\nHimmelsrand", ["RPG", "Fantasy"],
+                                   ["Windows", "Linux"], "tes5.png", discounted=True,
+                                   handle="TES V", price=19.99, playtime=48920))
 
-        self.all_games.append(Game("Gothisch 2: Die Nacht des Raben", 0, ["RPG", "Fantasy"],
-                                   ["Windows", "Linux"], 48920, "g2.png", handle="G2: DndR"))
+        self.all_games.append(Game("Gothisch 2:\nDie Nacht des Raben", ["RPG", "Fantasy"],
+                                   ["Windows", "Linux"], "g2.png", handle="G2: DndR", price=4.99, playtime=48920))
 
-        self.all_games.append(Game("Zeitalter der Imperien III", 0, ["Strategie"],
-                                   ["Windows"], 48920, "aoe.png", handle="AoE III"))
+        self.all_games.append(Game("Zeitalter der Imperien III", ["Strategie"],
+                                   ["Windows"], "aoe.png", handle="AoE III", price=9.99, playtime=48920))
 
         self.mainframe = Frame(master=self.master, bg=pas_dark)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
@@ -290,7 +293,7 @@ class Dampf:
         self.fr_cart.columnconfigure(0, weight=1)
         self.fr_cart.rowconfigure(0, weight=1)
 
-        self.cart_desc = ttk.Label(self.fr_cart, text="In ihrem Warenkorb befinden sich\nfolgende Artikel:",
+        self.cart_desc = ttk.Label(self.fr_cart, text="In ihrem Warenkorb befinden sich\nfolgende Spiele:",
                                    background=act_dark, width=30)
 
         self.cart_labels = []
@@ -303,9 +306,13 @@ class Dampf:
                                                      text="Löschen", background=act_dark))
 
         # TODO:
-        # self.clear_cart
-        #
-        # self.buy_cart
+        self.l_clear_cart = ttk.Label(self.fr_cart, text="Warenkorb löschen", background=act_dark)
+        self.l_clear_cart.bind("<Button-1>", self.clear_cart)
+
+        self.l_buy_cart = ttk.Label(self.fr_cart, text="Kaufen", background=act_dark)
+        self.l_buy_cart.bind("<Button-1>", self.buy_cart)
+        # TODO: In buy cart clear cart aufrufen? Aber zusätzlich
+        #  games auf owned setzen vorher
 
         # https://stackoverflow.com/questions/29091747/set-tkinter-label-texts-as-elements-of-list
         # TODO: Oder eine feste Menge (8) Labels, deren Texte nach einer Liste an Games im cart geändert werden.
@@ -314,13 +321,35 @@ class Dampf:
 
         self.open_shop(event=None)  # Show the shop on launch
 
+    def clear_cart(self, event):
+        for g in self.all_games:
+            if g.in_cart:
+                g.in_cart = False
+                remove_from_cart(None, g)
+        self.refresh_shop()
+
+    def buy_cart(self, event):
+        price_sum = 0
+        for g in self.all_games:
+            if g.in_cart:
+                price_sum += g.price
+        if self.balance >= price_sum:
+            for g in self.all_games:
+                if g.in_cart:
+                    g.in_cart = False
+                    remove_from_cart(None, g)
+                    g.owned = True
+            self.refresh_shop()
+        else:
+            self.open_funds(event)
+
     def refresh_shop(self):
         cart_games = []
         shop_games = []
         for game in self.all_games:
             if game.in_cart:
                 cart_games.append(game)
-            if not game.owned:  # and not game.in_cart:
+            if not game.owned:
                 shop_games.append(game)
 
         # print("Cart games: ", cart_games)
@@ -338,11 +367,20 @@ class Dampf:
             cdl.grid_forget()
 
         for i, game in enumerate(cart_games):
-            self.cart_labels[i].grid(column=0, row=i + 1)
+            self.cart_labels[i].grid(column=0, row=i + 1, sticky="w")
             self.cart_labels[i].configure(text=game.name, foreground="white")
-            self.cart_delete_labels[i].grid(column=1, row=i + 1)
+            self.cart_delete_labels[i].grid(column=1, row=i + 1, sticky="e")
             self.cart_delete_labels[i].bind("<Button-1>", lambda e, g=game,
                                             gf=game.game_frame: remove_from_cart(e, g, gf))
+
+        if len(cart_games) == 0:
+            self.cart_desc.configure(text="Ihr Warenkorb ist leer.")
+            self.l_buy_cart.grid_forget()
+            self.l_clear_cart.grid_forget()
+        else:
+            self.cart_desc.configure(text="In ihrem Warenkorb befinden sich\nfolgende Spiele:")
+            self.l_buy_cart.grid(row=len(cart_games)+1, column=0)
+            self.l_clear_cart.grid(row=len(cart_games)+1, column=1)
 
     def open_shop(self, event):
         if self.showing != "shop":
@@ -365,7 +403,11 @@ class Dampf:
 
             self.fr_cart.grid(row=1, column=1, sticky="wens")
 
-            self.cart_desc.grid(column=0, row=0)
+            self.cart_desc.grid(column=0, row=0, columnspan=2)
+
+            self.l_buy_cart.grid(row=1, column=0)
+
+            self.l_clear_cart.grid(row=1, column=1)
 
             self.refresh_shop()
 
@@ -605,14 +647,14 @@ class GameFrame(ttk.Frame):
             self.cart_icon = Label(
                 self.game_frame, image=self.remove_from_cart_icon, bg=act_dark)
             self.cart_icon.bind("<Button-1>", lambda event,
-                                g=game: remove_from_cart(event, g, self))
+                                g=game: remove_from_cart(event, g))
             self.cart_icon.image = self.remove_from_cart_icon
 
         else:
             self.cart_icon = Label(
                 self.game_frame, image=self.add_to_cart_icon, bg=act_dark)
             self.cart_icon.bind("<Button-1>", lambda event,
-                                g=game: add_to_cart(event, g, self))
+                                g=game: add_to_cart(event, g))
             self.cart_icon.image = self.add_to_cart_icon
 
         self.cart_icon.grid(row=0, column=3, rowspan=3,
