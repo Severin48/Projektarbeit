@@ -4,8 +4,8 @@ from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
 
-width = 900  # 720
-height = 600  # 512
+width = 1200  # 900, 720
+height = 700  # 600, 512
 small = height / 20
 
 act_dark = "#2d384b"
@@ -308,14 +308,14 @@ class Dampf:
             self.cart_delete_labels.append(ttk.Label(self.fr_cart,
                                                      text="Löschen", background=pas_dark))
 
-        # TODO:
+        price_str = str(self.get_total_cart_price()) + "€"
+        self.l_total_sum = ttk.Label(self.fr_cart, text=price_str, background=pas_dark)
+
         self.l_clear_cart = ttk.Label(self.fr_cart, text="Warenkorb löschen", background=pas_dark)
         self.l_clear_cart.bind("<Button-1>", self.clear_cart)
 
         self.l_buy_cart = ttk.Label(self.fr_cart, text="Kaufen", background="green")
         self.l_buy_cart.bind("<Button-1>", self.buy_cart)
-        # TODO: In buy cart clear cart aufrufen? Aber zusätzlich
-        #  games auf owned setzen vorher
 
         # https://stackoverflow.com/questions/29091747/set-tkinter-label-texts-as-elements-of-list
         # TODO: Oder eine feste Menge (8) Labels, deren Texte nach einer Liste an Games im cart geändert werden.
@@ -323,6 +323,13 @@ class Dampf:
         #  Oder einfach leicht machen und mehr als genug Labels machen und nur manche davon befüllen.
 
         self.open_shop(event=None)  # Show the shop on launch
+
+    def get_total_cart_price(self):
+        price_sum = 0
+        for g in self.all_games:
+            if g.in_cart:
+                price_sum += g.price
+        return price_sum
 
     def clear_cart(self, event):
         for g in self.all_games:
@@ -332,10 +339,7 @@ class Dampf:
         self.refresh_shop()
 
     def buy_cart(self, event):
-        price_sum = 0
-        for g in self.all_games:
-            if g.in_cart:
-                price_sum += g.price
+        price_sum = self.get_total_cart_price()
         if self.balance >= price_sum:
             for g in self.all_games:
                 if g.in_cart:
@@ -378,12 +382,16 @@ class Dampf:
 
         if len(cart_games) == 0:
             self.cart_desc.configure(text="Ihr Warenkorb ist leer.", anchor="center")
+            self.l_total_sum.grid_forget()
             self.l_buy_cart.grid_forget()
             self.l_clear_cart.grid_forget()
         else:
             self.cart_desc.configure(text="In ihrem Warenkorb befinden sich\nfolgende Spiele:")
-            self.l_buy_cart.grid(row=len(cart_games)+1, column=0)
-            self.l_clear_cart.grid(row=len(cart_games)+1, column=1)
+            self.l_total_sum.grid(row=len(cart_games)+1, column=0, columnspan=2)
+            cart_sum_str = "Gesamtpreis: " + str(self.get_total_cart_price()) + "€"
+            self.l_total_sum.configure(text=cart_sum_str)
+            self.l_buy_cart.grid(row=len(cart_games)+2, column=0)
+            self.l_clear_cart.grid(row=len(cart_games)+2, column=1)
 
     def open_shop(self, event):
         if self.showing != "shop":
@@ -408,9 +416,11 @@ class Dampf:
 
             self.cart_desc.grid(column=0, row=0, columnspan=2)
 
-            self.l_buy_cart.grid(row=1, column=0)
+            # self.l_total_sum.grid()
 
-            self.l_clear_cart.grid(row=1, column=1)
+            # self.l_buy_cart.grid(row=1, column=0)
+            #
+            # self.l_clear_cart.grid(row=1, column=1)
 
             self.refresh_shop()
 
