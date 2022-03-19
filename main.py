@@ -408,7 +408,7 @@ class Dampf:
 
             self.shop_page.grid(row=1, column=0, sticky="wens")
 
-            self.sorting_bar_sh.grid(row=0, column=0, sticky="wens")
+            self.sorting_bar_sh.grid(row=0, column=0, sticky="wens", columnspan=2)
 
             self.game_listings_frame.grid(
                 row=1, column=0, sticky='nsew', padx=20, pady=20)
@@ -433,7 +433,7 @@ class Dampf:
 
         self.lib_page.grid(row=1, column=0, sticky="wens")
 
-        self.sorting_bar_lib.grid(row=0, column=0, sticky="wens")
+        self.sorting_bar_lib.grid(row=0, column=0, sticky="wens", columnspan=2)
 
         self.info_tab.grid(row=1, column=1, sticky="wens")
 
