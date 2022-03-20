@@ -78,6 +78,25 @@ def remove_from_cart(event, game):
     dampf.refresh_shop()
 
 
+def get_total_playtime_str():
+    if dampf is None:
+        return "Keine"
+    else:
+        total_playtime = 0
+        for game in dampf.all_games:
+            if game.owned:
+                total_playtime += game.playtime
+        return time_to_str(total_playtime)
+
+
+def time_to_str(playtime):
+    h = round(playtime / 3600)
+    mn = round((playtime / 3600 - h) * 60)  # TODO hier Fabians Methode mit Modulo nehmen
+    sec = round((((playtime / 3600 - h) * 60) - min) * 60)
+
+    return str(h) + "h " + str(mn) + "min " + str(sec) + "sec"
+
+
 class Game:
     # TODO: Doc welche Einheiten/Typen z.B. Playtime in minuten
     def __init__(self, name, genre, platforms, img, handle, owned=False, discounted=False, price=0, playtime=0):
@@ -381,9 +400,9 @@ class Dampf:
 
         for game_frame in self.shop_game_frames:
             if game_frame.game in shop_games:
-                game_frame.game_frame.grid()
+                game_frame.grid()
             else:
-                game_frame.game_frame.grid_forget()
+                game_frame.grid_forget()
 
         for cl in self.cart_labels:
             cl.grid_forget()
@@ -448,9 +467,9 @@ class Dampf:
 
         for game_frame in self.lib_game_frames:
             if game_frame.game in lib_games:
-                game_frame.game_frame.grid()
+                game_frame.grid()
             else:
-                game_frame.game_frame.grid_forget()
+                game_frame.grid_forget()
 
         # TODO: Gesamtspielzeit und Wert aktualisieren
 
@@ -654,48 +673,25 @@ class ShopGameFrame(ttk.Frame):
 
         self.img = ttk.Label(
             self.game_frame, image=game.img, background=act_dark)
-        self.img.grid(row=0, column=0, rowspan=3, sticky="w")
 
         self.l_name = ttk.Label(
             self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background=act_dark)
-        self.l_name.grid(row=0, column=1, sticky="w")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
                                      background=act_dark, anchor="w")
-        self.l_platforms.grid(row=1, column=1, sticky="w")
 
         self.l_genre = ttk.Label(self.game_frame, text=game_str(
             game.genre), style="GameDesc.TLabel", background=act_dark, anchor="w")
-        self.l_genre.grid(row=2, column=1, sticky="w")
 
-        if game.discounted:
-            self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green", anchor="center")
-            self.l_discounted.grid(row=1, column=2)
-        else:
-            self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground=act_dark, anchor="center")
-            self.l_discounted.grid(row=1, column=2)
+        self.l_discounted = ttk.Label(
+            self.game_frame, text="%", style="TB.TLabel", background=act_dark, anchor="center")
 
         self.add_to_cart_icon = ImageTk.PhotoImage(
             Image.open("imgs/addcart.png"))
         self.remove_from_cart_icon = ImageTk.PhotoImage(
             Image.open("imgs/rmcart.png"))
-        if game.in_cart:
-            self.cart_icon = Label(
-                self.game_frame, image=self.remove_from_cart_icon, bg=act_dark)
-            self.cart_icon.bind("<Button-1>", lambda event,
-                                g=game: remove_from_cart(event, g))
-            self.cart_icon.image = self.remove_from_cart_icon
 
-        else:
-            self.cart_icon = Label(
-                self.game_frame, image=self.add_to_cart_icon, bg=act_dark)
-            self.cart_icon.bind("<Button-1>", lambda event,
-                                g=game: add_to_cart(event, g))
-            self.cart_icon.image = self.add_to_cart_icon
-
-        self.cart_icon.grid(row=1, column=3, rowspan=2, sticky="nsew")
+        self.cart_icon = Label(self.game_frame, bg=act_dark)
 
         if game.price == 0:
             price_str = "Free to play"
@@ -704,12 +700,44 @@ class ShopGameFrame(ttk.Frame):
         self.price_tag = ttk.Label(
                 self.game_frame, text=price_str, style="PriceTag.TLabel", background=act_dark, foreground="white")
 
-        self.price_tag.grid(row=0, column=3)
-
-        self.game_frame.grid(column=0, sticky="nsew")
-
     def __repr__(self):
         return "GameFrame_" + self.game.name
+
+    def grid(self):
+        self.img.grid(row=0, column=0, rowspan=3, sticky="w")
+        self.l_name.grid(row=0, column=1, sticky="w")
+        self.l_platforms.grid(row=1, column=1, sticky="w")
+        self.l_genre.grid(row=2, column=1, sticky="w")
+
+        if self.game.discounted:
+            self.l_discounted.configure(foreground="green")
+        else:
+            self.l_discounted.configure(foreground=act_dark)
+
+        self.l_discounted.grid(row=1, column=2)
+
+        if self.game.in_cart:
+            self.cart_icon.configure(image=self.remove_from_cart_icon)
+            self.cart_icon.bind("<Button-1>", lambda event, g=self.game: remove_from_cart(event, g))
+            self.cart_icon.image = self.remove_from_cart_icon
+        else:
+            self.cart_icon.configure(image=self.add_to_cart_icon)
+            self.cart_icon.bind("<Button-1>", lambda event, g=self.game: add_to_cart(event, g))
+            self.cart_icon.image = self.add_to_cart_icon
+
+        self.cart_icon.grid(row=1, column=3, rowspan=2, sticky="nsew")
+        self.price_tag.grid(row=0, column=3)
+        self.game_frame.grid(column=0, sticky="nsew")
+
+    def grid_forget(self):
+        self.img.grid_forget()
+        self.l_name.grid_forget()
+        self.l_platforms.grid_forget()
+        self.l_genre.grid_forget()
+        self.l_discounted.grid_forget()
+        self.cart_icon.grid_forget()
+        self.price_tag.grid_forget()
+        self.game_frame.grid_forget()
 
 
 class LibGameFrame(ttk.Frame):
@@ -734,64 +762,47 @@ class LibGameFrame(ttk.Frame):
 
         self.img = ttk.Label(
             self.game_frame, image=game.img_play, background=act_dark)
-        self.img.grid(row=0, column=0, rowspan=3, sticky="w")
 
         self.l_name = ttk.Label(
             self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background=act_dark)
-        self.l_name.grid(row=0, column=1, sticky="w")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
                                      background=act_dark, anchor="w")
-        self.l_platforms.grid(row=1, column=1, sticky="w")
 
         self.l_genre = ttk.Label(self.game_frame, text=game_str(
             game.genre), style="GameDesc.TLabel", background=act_dark, anchor="w")
-        self.l_genre.grid(row=2, column=1, sticky="w")
 
-        if game.discounted:
-            self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground="green",
-                anchor="center")
-            self.l_discounted.grid(row=1, column=2)
-        else:
-            self.l_discounted = ttk.Label(
-                self.game_frame, text="%", style="TB.TLabel", background=act_dark, foreground=act_dark,
-                anchor="center")
-            self.l_discounted.grid(row=1, column=2)
+        playtime_str = time_to_str(game.playtime)
+        self.l_playtime = ttk.Label(self.game_frame, text=playtime_str, style="GameDesc.TLabel",
+                                    background=act_dark, anchor="w")
 
-        self.add_to_cart_icon = ImageTk.PhotoImage(
-            Image.open("imgs/addcart.png"))
-        self.remove_from_cart_icon = ImageTk.PhotoImage(
-            Image.open("imgs/rmcart.png"))
-        if game.in_cart:
-            self.cart_icon = Label(
-                self.game_frame, image=self.remove_from_cart_icon, bg=act_dark)
-            self.cart_icon.bind("<Button-1>", lambda event,
-                                                     g=game: remove_from_cart(event, g))
-            self.cart_icon.image = self.remove_from_cart_icon
-
-        else:
-            self.cart_icon = Label(
-                self.game_frame, image=self.add_to_cart_icon, bg=act_dark)
-            self.cart_icon.bind("<Button-1>", lambda event,
-                                                     g=game: add_to_cart(event, g))
-            self.cart_icon.image = self.add_to_cart_icon
-
-        self.cart_icon.grid(row=1, column=3, rowspan=2, sticky="nsew")
-
-        if game.price == 0:
-            price_str = "Free to play"
-        else:
-            price_str = str(game.price) + "€"
-        self.price_tag = ttk.Label(
-            self.game_frame, text=price_str, style="PriceTag.TLabel", background=act_dark, foreground="white")
-
-        self.price_tag.grid(row=0, column=3)
+        self.l_refund = ttk.Label(self.game_frame, text="Zurückgeben", style="GameDesc.TLabel",
+                                    background=act_dark, anchor="w")
 
         self.game_frame.grid(column=0, sticky="nsew")
 
     def __repr__(self):
         return "GameFrame_" + self.game.name
+
+    def grid(self):
+        self.img.grid(row=0, column=0, rowspan=3, sticky="w")
+        self.l_name.grid(row=0, column=1, sticky="w")
+        self.l_platforms.grid(row=1, column=1, sticky="w")
+        self.l_genre.grid(row=2, column=1, sticky="w")
+
+        self.l_playtime.grid(row=0, column=3, sticky="w")
+        self.l_refund.grid(row=1, column=3, sticky="w")
+
+        self.game_frame.grid(column=0, sticky="nsew")
+
+    def grid_forget(self):
+        self.img.grid_forget()
+        self.l_name.grid_forget()
+        self.l_platforms.grid_forget()
+        self.l_genre.grid_forget()
+        self.l_playtime.grid_forget()
+        self.l_refund.grid_forget()
+        self.game_frame.grid_forget()
 
 
 if __name__ == '__main__':
