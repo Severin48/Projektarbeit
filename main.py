@@ -92,9 +92,11 @@ def get_total_playtime_str():
 def time_to_str(playtime):
     h = round(playtime / 3600)
     mn = round((playtime / 3600 - h) * 60)  # TODO hier Fabians Methode mit Modulo nehmen
-    sec = round((((playtime / 3600 - h) * 60) - min) * 60)
+    sec = round((((playtime / 3600 - h) * 60) - mn) * 60)
+    # TODO: Fabian hat noch Tage dazu gemacht.
+    #  Aber bei steam eig nicht
 
-    return str(h) + "h " + str(mn) + "min " + str(sec) + "sec"
+    return str(h) + "h " + str(mn) + "m " + str(sec) + "s"
 
 
 class Game:
@@ -136,7 +138,7 @@ class Dampf:
 
         self.all_games.append(Game("Gegenschlag:\nGlobale Offensive", ["Action", "Free to play"],
                                    ["Windows", "Linux", "Mac"], img="cs",
-                                   handle="CSGO", playtime=101880))
+                                   handle="CSGO", playtime=101882))
 
         self.all_games.append(Game("Die Älteren Rollen:\nHimmelsrand", ["RPG", "Fantasy"],
                                    ["Windows", "Linux"], img="tes5", discounted=True,
@@ -146,7 +148,7 @@ class Dampf:
                                    ["Windows", "Linux"], img="g2", handle="G2: DndR", price=9.99, playtime=48920))
 
         self.all_games.append(Game("Zeitalter der Imperien III", ["Strategie"],
-                                   ["Windows"], img="aoe", handle="AoE III", price=19.99, playtime=48920))
+                                   ["Windows"], img="aoe", handle="AoE III", price=19.99, playtime=48920, owned=True))
 
         self.mainframe = Frame(master=self.master, bg=pas_dark)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
