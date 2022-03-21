@@ -57,7 +57,7 @@ def main():
 def add_to_cart(event, game):
     # print("Adding to cart: ", game.handle)
     game.in_cart = True
-    gf = game.game_frame
+    gf = game.shop_game_frame
     gf.cart_icon.configure(image=gf.remove_from_cart_icon)
     gf.cart_icon.image = gf.remove_from_cart_icon
 
@@ -70,7 +70,7 @@ def add_to_cart(event, game):
 def remove_from_cart(event, game):
     # print("Removing from cart: ", game.handle)
     game.in_cart = False
-    gf = game.game_frame
+    gf = game.shop_game_frame
     gf.cart_icon.configure(image=gf.add_to_cart_icon)
     gf.cart_icon.image = gf.add_to_cart_icon
 
@@ -151,10 +151,6 @@ def sort_frames(page, by):
         return -1
 
 
-
-    # return ret
-
-
 class Game:
     # TODO: Doc welche Einheiten/Typen z.B. Playtime in Sekunden
     def __init__(self, name, genre, platforms, img, handle, owned=False, discounted=False, price=0, playtime=0):
@@ -170,7 +166,8 @@ class Game:
         self.img_play = ImageTk.PhotoImage(
             Image.open("imgs/" + img + "_play" + ".png"))
         self.handle = handle
-        self.game_frame = None
+        self.shop_game_frame = None
+        self.lib_game_frame = None
 
     def __repr__(self):
         return "Game_" + self.name
@@ -471,7 +468,7 @@ class Dampf:
         for game_frame in self.shop_game_frames:
             game_frame.grid_forget()
         for sg in shop_games:
-            sg.game_frame.grid()
+            sg.shop_game_frame.grid()
 
         for cl in self.cart_labels:
             cl.grid_forget()
@@ -484,7 +481,7 @@ class Dampf:
                 text=game.name, foreground="white", background=act_dark)
             self.cart_delete_labels[i].grid(column=1, row=i + 1, sticky="e")
             self.cart_delete_labels[i].bind("<Button-1>", lambda e, g=game,
-                                            gf=game.game_frame: remove_from_cart(e, g))
+                                            gf=game.shop_game_frame: remove_from_cart(e, g))
 
         if len(cart_games) == 0:
             self.cart_desc.configure(
@@ -546,14 +543,12 @@ class Dampf:
         for game_frame in self.lib_game_frames:
             game_frame.grid_forget()
         for lg in lib_games:
-            lg.game_frame.grid()
+            lg.lib_game_frame.grid()
 
         self.l_total_value.configure(
             text="Gesamtwert: " + get_total_value_str())
         self.l_total_playtime.configure(
             text="Gesamtspielzeit: " + get_total_playtime_str())
-
-        # TODO: Gesamtspielzeit und Wert aktualisieren
 
     def open_lib(self, event):
         self.shop_page.grid_forget()
@@ -739,7 +734,7 @@ class ShopGameFrame(ttk.Frame):
     def __init__(self, container, game, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
         self.game = game
-        game.game_frame = self
+        game.shop_game_frame = self
 
         container.rowconfigure(0, weight=1)
         container.columnconfigure(0, weight=1)
@@ -832,7 +827,7 @@ class LibGameFrame(ttk.Frame):
     def __init__(self, container, game, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
         self.game = game
-        game.game_frame = self
+        game.lib_game_frame = self
 
         container.rowconfigure(0, weight=1)
         container.columnconfigure(0, weight=1)
