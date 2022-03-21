@@ -125,8 +125,38 @@ def refund(event, g):
         dampf.refresh_lib()
 
 
+def sort_frames(page, by):
+    if page == "shop":
+        shop_games = []
+        for sg in dampf.all_games:
+            if not sg.owned and not sg.in_cart:
+                shop_games.append(sg)
+        if by == "name":
+            # 1. Sort Frames 2. Loop through sorted list and put onto grid - sorted list comes from students
+            ret = sorted(shop_games, key=lambda g: g.name)
+        elif by == "price":
+            ret = sorted(shop_games, key=lambda g: g.price)
+        dampf.refresh_shop(ret)
+    elif page == "lib":
+        lib_games = []
+        for lg in dampf.all_games:
+            if lg.owned:
+                lib_games.append(lg)
+        if by == "name":
+            ret = sorted(lib_games, key=lambda g: g.name)
+        elif by == "playtime":
+            ret = sorted(lib_games, key=lambda g: g.playtime)
+        dampf.refresh_lib(ret)
+    else:
+        return -1
+
+
+
+    # return ret
+
+
 class Game:
-    # TODO: Doc welche Einheiten/Typen z.B. Playtime in minuten
+    # TODO: Doc welche Einheiten/Typen z.B. Playtime in Sekunden
     def __init__(self, name, genre, platforms, img, handle, owned=False, discounted=False, price=0, playtime=0):
         self.name = name
         self.price = price
@@ -422,20 +452,26 @@ class Dampf:
         else:
             self.open_funds(event)
 
-    def refresh_shop(self):
-        cart_games = []
+    def refresh_shop(self, sorted_sg=None):
         shop_games = []
-        for game in self.all_games:
-            if game.in_cart:
-                cart_games.append(game)
-            if not game.owned:
-                shop_games.append(game)
+        cart_games = []
+        if not sorted_sg:
+            for game in self.all_games:
+                if game.in_cart:
+                    cart_games.append(game)
+                if not game.owned:
+                    shop_games.append(game)
+        else:
+            shop_games = sorted_sg  # .copy()
+            cart_games = []
+            for game in self.all_games:
+                if game.in_cart:
+                    cart_games.append(game)
 
         for game_frame in self.shop_game_frames:
-            if game_frame.game in shop_games:
-                game_frame.grid()
-            else:
-                game_frame.grid_forget()
+            game_frame.grid_forget()
+        for sg in shop_games:
+            sg.game_frame.grid()
 
         for cl in self.cart_labels:
             cl.grid_forget()
@@ -498,17 +534,19 @@ class Dampf:
 
             self.showing = "shop"
 
-    def refresh_lib(self):
+    def refresh_lib(self, sorted_lg=None):
         lib_games = []
-        for game in self.all_games:
-            if game.owned:
-                lib_games.append(game)
+        if not sorted_lg:
+            for game in self.all_games:
+                if game.owned:
+                    lib_games.append(game)
+        else:
+            lib_games = sorted_lg  # .copy()
 
         for game_frame in self.lib_game_frames:
-            if game_frame.game in lib_games:
-                game_frame.grid()
-            else:
-                game_frame.grid_forget()
+            game_frame.grid_forget()
+        for lg in lib_games:
+            lg.game_frame.grid()
 
         self.l_total_value.configure(
             text="Gesamtwert: " + get_total_value_str())
@@ -616,23 +654,27 @@ class Dampf:
     def sort_by_price(self, event):
         # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
         print("Nach Preis Sortieren")
+        sort_frames("shop", "price")
         self.sort_by_price_label.grid_forget()
         self.sort_shop_by_name_label.grid()
 
     def sort_shop_by_name(self, event):
         # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
         print("Nach Name Sortieren")
+        sort_frames("shop", "name")
         self.sort_shop_by_name_label.grid_forget()
         self.sort_by_price_label.grid()
 
     def sort_lib_by_name(self, event):
         # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
         print("Nach Name Sortieren")
+        sort_frames("lib", "name")
         self.sort_lib_by_name_label.grid_forget()
         self.sort_by_playtime_label.grid()
 
     def sort_by_playtime(self, event):
         print("Nach Spielzeit sortieren")
+        sort_frames("lib", "playtime")
         self.sort_by_playtime_label.grid_forget()
         self.sort_lib_by_name_label.grid()
 
