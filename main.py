@@ -31,10 +31,12 @@ def main():
                     background=pas_dark, anchor="center")
     style.configure("FundsAmount.TLabel", font=(
         'arial', 14), background=act_dark)
-    style.configure("GameName.TLabel", background=pas_dark, anchor="center", font=('arial', 12, "bold"))
-    style.configure("GameDesc.TLabel", background=pas_dark, anchor="center", font=('arial', 10))
+    style.configure("GameName.TLabel", background=pas_dark,
+                    anchor="center", font=('arial', 12, "bold"))
+    style.configure("GameDesc.TLabel", background=pas_dark,
+                    anchor="center", font=('arial', 10))
     style.configure("PriceTag.TLabel", font=('arial', 12))
-    style.configure("LibInfo.TLabel", font=("arial", 12),
+    style.configure("LibInfo.TLabel", font=("arial", 14),
                     background=pas_dark, anchor="center")
 
     global dampf
@@ -90,13 +92,37 @@ def get_total_playtime_str():
 
 
 def time_to_str(playtime):
-    h = round(playtime / 3600)
-    mn = round((playtime / 3600 - h) * 60)  # TODO hier Fabians Methode mit Modulo nehmen
-    sec = round((((playtime / 3600 - h) * 60) - mn) * 60)
+    h = playtime // 3600
+    # TODO hier Fabians Methode mit Modulo nehmen
+    mn = round(((playtime / 3600) - h) * 60)
+    sec = round(((((playtime / 3600) - h) * 60) - mn) * 60)
     # TODO: Fabian hat noch Tage dazu gemacht.
     #  Aber bei steam eig nicht
 
     return str(h) + "h " + str(mn) + "m " + str(sec) + "s"
+
+
+def get_total_value_str():
+    if dampf is None:
+        return "Keine"
+    else:
+        total_value = 0
+        for game in dampf.all_games:
+            if game.owned:
+                total_value += game.price
+        return str(total_value) + "€"
+
+
+def refund(event, g):
+    if g.playtime > 3600*2:  # 2h
+        # TODO: Popup refund nicht möglich weil mehr als 2h Spielzeit
+        pass
+    else:
+        print("Returning")
+        g.owned = False
+        dampf.balance += g.price
+        dampf.refresh_shop()
+        dampf.refresh_lib()
 
 
 class Game:
@@ -111,7 +137,8 @@ class Game:
         self.in_cart = False
         self.owned = owned
         self.img = ImageTk.PhotoImage(Image.open("imgs/" + img + ".png"))
-        self.img_play = ImageTk.PhotoImage(Image.open("imgs/" + img + "_play" + ".png"))
+        self.img_play = ImageTk.PhotoImage(
+            Image.open("imgs/" + img + "_play" + ".png"))
         self.handle = handle
         self.game_frame = None
 
@@ -232,7 +259,8 @@ class Dampf:
                 container=self.game_library_frame.scrollable_frame, game=game)
             self.lib_game_frames.append(temp_frame)
 
-        self.l_total_value = ttk.Label(self.info_tab, text="Gesamtwert: 0€", style="LibInfo.TLabel")
+        self.l_total_value = ttk.Label(
+            self.info_tab, text="Gesamtwert: 0€", style="LibInfo.TLabel")
 
         self.l_total_playtime = ttk.Label(self.info_tab, text="Gesamtspielzeit: 0 h 0 min 0 sec",
                                           style="LibInfo.TLabel")
@@ -349,12 +377,15 @@ class Dampf:
                                                      text="Löschen", background=pas_dark))
 
         price_str = str(self.get_total_cart_price()) + "€"
-        self.l_total_sum = ttk.Label(self.fr_cart, text=price_str, background=pas_dark)
+        self.l_total_sum = ttk.Label(
+            self.fr_cart, text=price_str, background=pas_dark)
 
-        self.l_clear_cart = ttk.Label(self.fr_cart, text="Warenkorb löschen", background=pas_dark)
+        self.l_clear_cart = ttk.Label(
+            self.fr_cart, text="Warenkorb löschen", background=pas_dark)
         self.l_clear_cart.bind("<Button-1>", self.clear_cart)
 
-        self.l_buy_cart = ttk.Label(self.fr_cart, text="Kaufen", background="green")
+        self.l_buy_cart = ttk.Label(
+            self.fr_cart, text="Kaufen", background="green")
         self.l_buy_cart.bind("<Button-1>", self.buy_cart)
 
         # https://stackoverflow.com/questions/29091747/set-tkinter-label-texts-as-elements-of-list
@@ -413,20 +444,25 @@ class Dampf:
 
         for i, game in enumerate(cart_games):
             self.cart_labels[i].grid(column=0, row=i + 1)
-            self.cart_labels[i].configure(text=game.name, foreground="white", background=act_dark)
+            self.cart_labels[i].configure(
+                text=game.name, foreground="white", background=act_dark)
             self.cart_delete_labels[i].grid(column=1, row=i + 1, sticky="e")
             self.cart_delete_labels[i].bind("<Button-1>", lambda e, g=game,
                                             gf=game.game_frame: remove_from_cart(e, g))
 
         if len(cart_games) == 0:
-            self.cart_desc.configure(text="Ihr Warenkorb ist leer.", anchor="center")
+            self.cart_desc.configure(
+                text="Ihr Warenkorb ist leer.", anchor="center")
             self.l_total_sum.grid_forget()
             self.l_buy_cart.grid_forget()
             self.l_clear_cart.grid_forget()
         else:
-            self.cart_desc.configure(text="In ihrem Warenkorb befinden sich\nfolgende Spiele:")
-            self.l_total_sum.grid(row=len(cart_games)+1, column=0, columnspan=2)
-            cart_sum_str = "Gesamtpreis: " + str(self.get_total_cart_price()) + "€"
+            self.cart_desc.configure(
+                text="In ihrem Warenkorb befinden sich\nfolgende Spiele:")
+            self.l_total_sum.grid(row=len(cart_games)+1,
+                                  column=0, columnspan=2)
+            cart_sum_str = "Gesamtpreis: " + \
+                str(self.get_total_cart_price()) + "€"
             self.l_total_sum.configure(text=cart_sum_str)
             self.l_buy_cart.grid(row=len(cart_games)+2, column=0)
             self.l_clear_cart.grid(row=len(cart_games)+2, column=1)
@@ -444,7 +480,8 @@ class Dampf:
 
             self.shop_page.grid(row=1, column=0, sticky="wens")
 
-            self.sorting_bar_sh.grid(row=0, column=0, sticky="wens", columnspan=2)
+            self.sorting_bar_sh.grid(
+                row=0, column=0, sticky="wens", columnspan=2)
 
             self.game_listings_frame.grid(
                 row=1, column=0, sticky='nsew', padx=20, pady=20)
@@ -472,6 +509,11 @@ class Dampf:
                 game_frame.grid()
             else:
                 game_frame.grid_forget()
+
+        self.l_total_value.configure(
+            text="Gesamtwert: " + get_total_value_str())
+        self.l_total_playtime.configure(
+            text="Gesamtspielzeit: " + get_total_playtime_str())
 
         # TODO: Gesamtspielzeit und Wert aktualisieren
 
@@ -700,7 +742,7 @@ class ShopGameFrame(ttk.Frame):
         else:
             price_str = str(game.price) + "€"
         self.price_tag = ttk.Label(
-                self.game_frame, text=price_str, style="PriceTag.TLabel", background=act_dark, foreground="white")
+            self.game_frame, text=price_str, style="PriceTag.TLabel", background=act_dark, foreground="white")
 
     def __repr__(self):
         return "GameFrame_" + self.game.name
@@ -720,11 +762,13 @@ class ShopGameFrame(ttk.Frame):
 
         if self.game.in_cart:
             self.cart_icon.configure(image=self.remove_from_cart_icon)
-            self.cart_icon.bind("<Button-1>", lambda event, g=self.game: remove_from_cart(event, g))
+            self.cart_icon.bind("<Button-1>", lambda event,
+                                g=self.game: remove_from_cart(event, g))
             self.cart_icon.image = self.remove_from_cart_icon
         else:
             self.cart_icon.configure(image=self.add_to_cart_icon)
-            self.cart_icon.bind("<Button-1>", lambda event, g=self.game: add_to_cart(event, g))
+            self.cart_icon.bind("<Button-1>", lambda event,
+                                g=self.game: add_to_cart(event, g))
             self.cart_icon.image = self.add_to_cart_icon
 
         self.cart_icon.grid(row=1, column=3, rowspan=2, sticky="nsew")
@@ -756,7 +800,8 @@ class LibGameFrame(ttk.Frame):
         self.game_frame.columnconfigure(0, weight=1)  # Image
         self.game_frame.columnconfigure(1, weight=1)  # Name, Platforms, Genre
         self.game_frame.columnconfigure(2, weight=1)  # Space buffer
-        self.game_frame.columnconfigure(3, weight=1)  # Playtime info and refund button
+        # Playtime info and refund button
+        self.game_frame.columnconfigure(3, weight=1)
 
         self.game_frame.rowconfigure(0, weight=1)  # Name
         self.game_frame.rowconfigure(1, weight=1)  # Platforms
@@ -779,7 +824,9 @@ class LibGameFrame(ttk.Frame):
                                     background=act_dark, anchor="w")
 
         self.l_refund = ttk.Label(self.game_frame, text="Zurückgeben", style="GameDesc.TLabel",
-                                    background=act_dark, anchor="w")
+                                  background=act_dark, anchor="w")
+        self.l_refund.bind("<Button-1>", lambda event,
+                           g=self.game: refund(event, g))
 
         self.game_frame.grid(column=0, sticky="nsew")
 
