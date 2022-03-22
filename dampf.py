@@ -4,6 +4,14 @@ from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
 
+using_student_solution = False  # Wechsel zwischen Musterlösung und Studentenlösung
+
+if using_student_solution:
+    import student_solution as sol
+else:
+    import solution as sol
+
+
 width = 1200  # 900, 720
 height = 700  # 600, 512
 small = height / 20
@@ -16,7 +24,9 @@ pas_dark = "#1f232a"
 dampf = None
 
 
-def main():
+
+
+def init():
     # root = Tk()
     root = ThemedTk()
     style = ttk.Style()
@@ -114,15 +124,16 @@ def get_total_value_str():
 
 
 def refund(event, g):
-    if g.playtime > 3600*2:  # 2h
-        # TODO: Popup refund nicht möglich weil mehr als 2h Spielzeit
-        pass
-    else:
-        print("Returning")
-        g.owned = False
-        dampf.balance += g.price
-        dampf.refresh_shop()
-        dampf.refresh_lib()
+    # if g.playtime > 3600*2:  # 2h
+    #     # TODO: Popup refund nicht möglich weil mehr als 2h Spielzeit
+    #     pass
+    # else:
+        # print("Returning")
+    g.owned = False
+    dampf.balance += g.price
+    dampf.shop_items.append(g)
+    dampf.refresh_shop()
+    dampf.refresh_lib()
 
 
 def sort_frames(page, by):
@@ -448,6 +459,7 @@ class Dampf:
                     g.in_cart = False
                     remove_from_cart(None, g)
                     g.owned = True
+                    self.shop_items.remove(g)
             self.balance -= price_sum
             self.refresh_shop()
         else:
@@ -511,7 +523,7 @@ class Dampf:
         del self.shop_items
         self.shop_items = []
         for g in self.all_games:
-            if not g.owned and not g.in_cart:
+            if not g.owned:
                 self.shop_items.append(g)
 
         self.shop_label.configure(font=("arial", 20, "bold"))
@@ -901,4 +913,4 @@ class LibGameFrame(ttk.Frame):
 
 
 if __name__ == '__main__':
-    main()
+    init()
