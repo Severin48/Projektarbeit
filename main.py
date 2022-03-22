@@ -127,16 +127,19 @@ def refund(event, g):
 
 def sort_frames(page, by):
     if page == "shop":
+        del dampf.shop_items
+        dampf.shop_items = []
         shop_games = []
         for sg in dampf.all_games:
-            if not sg.owned and not sg.in_cart:
+            if not sg.owned:
                 shop_games.append(sg)
         if by == "name":
             # 1. Sort Frames 2. Loop through sorted list and put onto grid - sorted list comes from students
             ret = sorted(shop_games, key=lambda g: g.name)
         elif by == "price":
             ret = sorted(shop_games, key=lambda g: g.price)
-        dampf.refresh_shop(ret)
+        dampf.shop_items = ret.copy()
+        dampf.refresh_shop()
     elif page == "lib":
         lib_games = []
         for lg in dampf.all_games:
@@ -186,6 +189,7 @@ class Dampf:
         self.all_games = []
         self.shop_game_frames = []
         self.lib_game_frames = []
+        self.shop_items = []
 
         self.all_games.append(Game("Ruf der Pflicht:\nModerne Kriegskunst 2", ["First-person shooter", "Action"],
                                    ["Windows"], img="mw2", discounted=True, handle="MW2", price=19.99, playtime=0))
@@ -264,7 +268,7 @@ class Dampf:
 
         self.sorting_bar_lib = Frame(master=self.lib_page, bg=pas_dark)
 
-        self.info_tab = Frame(master=self.lib_page, bg="blue")
+        self.info_tab = Frame(master=self.lib_page, bg=act_dark)
 
         self.info_tab.rowconfigure(0, weight=1)
         self.info_tab.rowconfigure(1, weight=1)
@@ -450,24 +454,24 @@ class Dampf:
             self.open_funds(event)
 
     def refresh_shop(self, sorted_sg=None):
-        shop_games = []
+        # shop_games = []
         cart_games = []
-        if not sorted_sg:
-            for game in self.all_games:
-                if game.in_cart:
-                    cart_games.append(game)
-                if not game.owned:
-                    shop_games.append(game)
-        else:
-            shop_games = sorted_sg  # .copy()
-            cart_games = []
-            for game in self.all_games:
-                if game.in_cart:
-                    cart_games.append(game)
+        # if not sorted_sg:
+        for game in self.all_games:
+            if game.in_cart:
+                cart_games.append(game)
+        #         if not game.owned:
+        #             shop_games.append(game)
+        # else:
+        #     shop_games = sorted_sg  # .copy()
+        #     cart_games = []
+        #     for game in self.all_games:
+        #         if game.in_cart:
+        #             cart_games.append(game)
 
         for game_frame in self.shop_game_frames:
             game_frame.grid_forget()
-        for sg in shop_games:
+        for sg in self.shop_items:
             sg.shop_game_frame.grid()
 
         for cl in self.cart_labels:
@@ -504,32 +508,37 @@ class Dampf:
         self.balance_label.config(text=balance_str)
 
     def open_shop(self, event):
-        if self.showing != "shop":
-            self.shop_label.configure(font=("arial", 20, "bold"))
-            self.lib_label.configure(font=('arial', 20))
+        del self.shop_items
+        self.shop_items = []
+        for g in self.all_games:
+            if not g.owned and not g.in_cart:
+                self.shop_items.append(g)
 
-            self.lib_page.grid_forget()
-            self.funds_frame.grid_forget()
+        self.shop_label.configure(font=("arial", 20, "bold"))
+        self.lib_label.configure(font=('arial', 20))
 
-            self.shop_page.grid(row=1, column=0, sticky="wens")
+        self.lib_page.grid_forget()
+        self.funds_frame.grid_forget()
 
-            self.sorting_bar_sh.grid(
-                row=0, column=0, sticky="wens", columnspan=2)
+        self.shop_page.grid(row=1, column=0, sticky="wens")
 
-            self.game_listings_frame.grid(
-                row=1, column=0, sticky='nsew', padx=20, pady=20)
+        self.sorting_bar_sh.grid(
+            row=0, column=0, sticky="wens", columnspan=2)
 
-            self.sort_by_price_label.grid(row=0, column=1, sticky="w")
+        self.game_listings_frame.grid(
+            row=1, column=0, sticky='nsew', padx=20, pady=20)
 
-            self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
+        self.sort_by_price_label.grid(row=0, column=1, sticky="w")
 
-            self.fr_cart.grid(row=1, column=1, sticky="wens")
+        self.sort_shop_by_name_label.grid(row=0, column=1, sticky="w")
 
-            self.cart_desc.grid(column=0, row=0, columnspan=2)
+        self.fr_cart.grid(row=1, column=1, sticky="wens")
 
-            self.refresh_shop()
+        self.cart_desc.grid(column=0, row=0, columnspan=2)
 
-            self.showing = "shop"
+        self.refresh_shop()
+
+        self.showing = "shop"
 
     def refresh_lib(self, sorted_lg=None):
         lib_games = []
