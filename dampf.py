@@ -4,7 +4,7 @@ from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
 
-using_student_solution = False  # Wechsel zwischen Musterlösung und Studentenlösung
+using_student_solution = True  # Wechsel zwischen Musterlösung und Studentenlösung
 
 if using_student_solution:
     import student_solution as sol
@@ -61,6 +61,13 @@ def init():
 
     root.mainloop()
 
+
+def print_error(msg):
+    print("__________________________________________________________________________________________________")
+    print("__________________________________________________________________________________________________")
+    print("Warnung: " + msg)
+    print("__________________________________________________________________________________________________")
+    print("__________________________________________________________________________________________________")
 
 def add_to_cart(event, game):
     # print("Adding to cart: ", game.handle)
@@ -129,7 +136,18 @@ def refund(event, g):
     # print("Returning")
     g.owned = False
     sol_new_balance = sol.add_to_balance(old_balance=dampf.balance, amount=g.price)
-    assert sol_new_balance > dampf.balance and sol_new_balance >= 0
+    if not sol_new_balance:
+        print_error("Keinen Rückgabewert erhalten (None).\nBeim Aufladen des Guthabens wurde kein neues" +
+                    " Guthaben per return übergeben.")
+    elif not isinstance(sol_new_balance, float):
+        print_error("Das Guthaben muss als Gleitkommazahl (float) angegeben werden, um die Centbeträge anzeigen zu " +
+                    "können.")
+    elif sol_new_balance < 0:
+        print_error("Das Guthaben ist negativ geworden.")
+    elif sol_new_balance < dampf.balance:
+        print_error("Das Guthaben wurde nicht aufgeladen und ist stattdessen kleiner geworden.")
+    else:
+        dampf.balance = sol_new_balance
     # dampf.balance += g.price
     dampf.shop_items.append(g)
     dampf.refresh_shop()
