@@ -27,7 +27,7 @@ def calculate_total_cart_price(prices):
     total_sum = 0
     for price in prices:
         total_sum += price
-    return total_sum
+    return round(total_sum, 2)
 
 
 def enough_balance(cart_price, account_balance):
@@ -46,6 +46,13 @@ def playtime_from_seconds(seconds):
     s = secs_left % 60
 
     return h, m, s
+
+
+def total_library_value(prices):
+    total_value = 0
+    for price in prices:
+        total_value += price
+    return round(total_value, 2)
 
 
 if __name__ == 'main':

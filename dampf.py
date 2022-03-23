@@ -24,8 +24,6 @@ pas_dark = "#1f232a"
 dampf = None
 
 
-
-
 def init():
     # root = Tk()
     root = ThemedTk()
@@ -120,7 +118,7 @@ def get_total_value_str():
         for game in dampf.all_games:
             if game.owned:
                 total_value += game.price
-        return str(total_value) + "€"
+        return str(round(total_value, 2)) + "€"
 
 
 def refund(event, g):
@@ -128,9 +126,11 @@ def refund(event, g):
     #     # TODO: Popup refund nicht möglich weil mehr als 2h Spielzeit
     #     pass
     # else:
-        # print("Returning")
+    # print("Returning")
     g.owned = False
-    dampf.balance += g.price
+    sol_new_balance = sol.add_to_balance(old_balance=dampf.balance, amount=g.price)
+    assert sol_new_balance > dampf.balance and sol_new_balance >= 0
+    # dampf.balance += g.price
     dampf.shop_items.append(g)
     dampf.refresh_shop()
     dampf.refresh_lib()
