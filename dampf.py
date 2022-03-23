@@ -3,8 +3,9 @@ from tkinter import ttk
 from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
+import sys
 
-using_student_solution = True  # Wechsel zwischen Musterlösung und Studentenlösung
+using_student_solution = False  # Wechsel zwischen Musterlösung und Studentenlösung
 
 if using_student_solution:
     import student_solution as sol
@@ -22,10 +23,12 @@ pas_dark = "#1f232a"
 # TODO: Typing
 
 dampf = None
+root = None
 
 
 def init():
     # root = Tk()
+    global root
     root = ThemedTk()
     style = ttk.Style()
     style.theme_use('clam')
@@ -68,9 +71,26 @@ def print_error(msg):
     print("Warnung: " + msg)
     print("__________________________________________________________________________________________________")
     print("__________________________________________________________________________________________________")
+    global root
+    root.destroy()
+    sys.exit()
+
 
 def add_to_cart(event, game):
     # print("Adding to cart: ", game.handle)
+    sol_cart_games = sol.add_game_to_cart(games_in_cart=dampf.cart_games, game_to_add=game)
+    old_len = len(dampf.cart_games)
+    if not sol_cart_games:
+        print_error("Keinen Rückgabewert erhalten (None).\nBeim Hinzufügen des Spiels zum Warenkorb wurde nichts" +
+                    " per return übergeben.")
+    elif not isinstance(sol_cart_games, list):
+        print_error("Der Warenkorb muss als Liste (list) übergeben werden, in der sich die Spiele befinden.")
+    elif len(sol_cart_games) < old_len:
+        print_error("Die Warenkorbliste hat ein oder mehrere Elemente verloren.")
+    elif len(sol_cart_games) > old_len + 1:
+        print_error("Die Warenkorbliste hat zu viele Elemente.")
+    else:
+        dampf.cart_games = sol_cart_games
     game.in_cart = True
     gf = game.shop_game_frame
     gf.cart_icon.configure(image=gf.remove_from_cart_icon)
@@ -219,6 +239,7 @@ class Dampf:
         self.shop_game_frames = []
         self.lib_game_frames = []
         self.shop_items = []
+        self.cart_games = []
 
         self.all_games.append(Game("Ruf der Pflicht:\nModerne Kriegskunst 2", ["First-person shooter", "Action"],
                                    ["Windows"], img="mw2", discounted=True, handle="MW2", price=19.99, playtime=0))
@@ -485,11 +506,11 @@ class Dampf:
 
     def refresh_shop(self, sorted_sg=None):
         # shop_games = []
-        cart_games = []
+        # cart_games = []
         # if not sorted_sg:
-        for game in self.all_games:
-            if game.in_cart:
-                cart_games.append(game)
+        # for game in self.all_games:
+        #     if game.in_cart:
+        #         cart_games.append(game)
         #         if not game.owned:
         #             shop_games.append(game)
         # else:
@@ -509,7 +530,7 @@ class Dampf:
         for cdl in self.cart_delete_labels:
             cdl.grid_forget()
 
-        for i, game in enumerate(cart_games):
+        for i, game in enumerate(self.cart_games):
             self.cart_labels[i].grid(column=0, row=i + 1)
             self.cart_labels[i].configure(
                 text=game.name, foreground="white", background=act_dark)
@@ -517,7 +538,7 @@ class Dampf:
             self.cart_delete_labels[i].bind("<Button-1>", lambda e, g=game,
                                             gf=game.shop_game_frame: remove_from_cart(e, g))
 
-        if len(cart_games) == 0:
+        if len(self.cart_games) == 0:
             self.cart_desc.configure(
                 text="Ihr Warenkorb ist leer.", anchor="center")
             self.l_total_sum.grid_forget()
@@ -526,13 +547,13 @@ class Dampf:
         else:
             self.cart_desc.configure(
                 text="In ihrem Warenkorb befinden sich\nfolgende Spiele:")
-            self.l_total_sum.grid(row=len(cart_games)+1,
+            self.l_total_sum.grid(row=len(self.cart_games)+1,
                                   column=0, columnspan=2)
             cart_sum_str = "Gesamtpreis: " + \
                 str(self.get_total_cart_price()) + "€"
             self.l_total_sum.configure(text=cart_sum_str)
-            self.l_buy_cart.grid(row=len(cart_games)+2, column=0)
-            self.l_clear_cart.grid(row=len(cart_games)+2, column=1)
+            self.l_buy_cart.grid(row=len(self.cart_games)+2, column=0)
+            self.l_clear_cart.grid(row=len(self.cart_games)+2, column=1)
 
         balance_str = str(self.get_balance()) + "€"
         self.balance_label.config(text=balance_str)
