@@ -4,11 +4,12 @@ def add_to_balance(old_balance, amount):
 
 
 def add_game_to_cart(games_in_cart, game_to_add):
-    return games_in_cart.append(game_to_add) # TODO: ?
+    games_in_cart.append(game_to_add)
+    return games_in_cart
 
 
 def remove_game_from_cart(games_in_cart, game_to_remove):
-    return games_in_cart.remove(game_to_remove)
+    return games_in_cart.remove(game_to_remove)  # TODO: Siehe add_game_to_cart return is None
 
 
 def calculate_price_with_discount(game_price, discounted):
