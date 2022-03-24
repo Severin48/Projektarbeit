@@ -253,10 +253,15 @@ class Dampf:
                                    handle="TES V", price=39.99, playtime=48920))
 
         self.all_games.append(Game("Gothisch 2:\nDie Nacht des Raben", ["RPG", "Fantasy"],
-                                   ["Windows", "Linux"], img="g2", handle="G2: DndR", price=9.99, playtime=48920))
+                                   ["Windows", "Linux"], img="g2", handle="G2: DndR", price=9.99, playtime=48920,
+                                   owned=True))
 
         self.all_games.append(Game("Zeitalter der Imperien III", ["Strategie"],
-                                   ["Windows"], img="aoe", handle="AoE III", price=19.99, playtime=48920, owned=True))
+                                   ["Windows"], img="aoe", handle="AoE III", price=19.99, playtime=48920, owned=False))
+
+        self.all_games.append(Game("Der Wald", ["Überleben"],
+                                   ["Windows", "Linux", "Mac"], img="forest", handle="Forest", price=16.79,
+                                   playtime=234842, owned=True))
 
         self.mainframe = Frame(master=self.master, bg=pas_dark)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
