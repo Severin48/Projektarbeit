@@ -78,8 +78,8 @@ def print_error(msg):
 
 def add_to_cart(event, game):
     # print("Adding to cart: ", game.handle)
-    sol_cart_games = sol.add_game_to_cart(games_in_cart=dampf.cart_games, game_to_add=game)
     old_len = len(dampf.cart_games)
+    sol_cart_games = sol.add_game_to_cart(games_in_cart=dampf.cart_games, game_to_add=game)
     if not sol_cart_games:
         print_error("Keinen Rückgabewert erhalten (None).\nBeim Hinzufügen des Spiels zum Warenkorb wurde nichts" +
                     " per return übergeben.")
@@ -104,6 +104,19 @@ def add_to_cart(event, game):
 
 def remove_from_cart(event, game):
     # print("Removing from cart: ", game.handle)
+    old_len = len(dampf.cart_games)
+    sol_cart_games = sol.remove_game_from_cart(games_in_cart=dampf.cart_games, game_to_remove=game)
+    if not sol_cart_games and old_len != 1 and old_len != 0:
+        print_error("Keinen Rückgabewert erhalten (None).\nBeim Entfernen des Spiels vom Warenkorb wurde nichts" +
+                    " per return übergeben.")
+    elif not isinstance(sol_cart_games, list):
+        print_error("Der Warenkorb muss als Liste (list) übergeben werden, in der sich die Spiele befinden.")
+    elif len(sol_cart_games) >= old_len:
+        print_error("Die Warenkorbliste hat ein oder mehrere Elemente zu viel.")
+    elif len(sol_cart_games) < old_len - 1:
+        print_error("Die Warenkorbliste hat zu wenige Elemente.")
+    else:
+        dampf.cart_games = sol_cart_games
     game.in_cart = False
     gf = game.shop_game_frame
     gf.cart_icon.configure(image=gf.add_to_cart_icon)
@@ -220,6 +233,19 @@ class Game:
         self.handle = handle
         self.shop_game_frame = None
         self.lib_game_frame = None
+        self.full_price = price
+        self.discounted_price = sol.calculate_price_with_discount(game_price=self.full_price, discounted=discounted)
+        if self.discounted_price is None:
+            print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des rabattierten Preises gab es kein"
+                        " return.")
+        elif not isinstance(self.discounted_price, float) and self.discounted_price != 0:
+            print_error("Der Preis muss als Gleitkommazahl (float) übergeben werden.")
+        elif self.discounted_price > self.full_price:
+            print_error("Das Spiel ist durch den Rabatt teurer statt billiger geworden.")
+        elif self.discounted_price < 0:
+            print_error("Der Preis kann nicht negativ sein.")
+        elif self.discounted_price != round(self.discounted_price, 2):
+            print_error("Der Preis sollte auf zwei Nachkommastellen gerundet sein.")
 
     def __repr__(self):
         return "Game_" + self.name
@@ -482,11 +508,22 @@ class Dampf:
         self.open_shop(event=None)  # Show the shop on launch
 
     def get_total_cart_price(self):
-        price_sum = 0
+        prices = []
         for g in self.all_games:
             if g.in_cart:
-                price_sum += g.price
-        return round(price_sum, 2)
+                prices.append(g.discounted_price)
+        total_cart_price = sol.calculate_total_cart_price(prices)
+        if total_cart_price is None:
+            print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des rabattierten Preises gab es kein"
+                        " return.")
+        elif not isinstance(total_cart_price, float) and total_cart_price != 0:
+            print_error("Der Preis muss als Gleitkommazahl (float) übergeben werden.")
+        elif total_cart_price < 0:
+            print_error("Der Preis kann nicht negativ sein.")
+        elif total_cart_price != round(total_cart_price, 2):
+            print_error("Der Preis sollte auf zwei Nachkommastellen gerundet sein.")
+
+        return total_cart_price
 
     def clear_cart(self, event):
         for g in self.all_games:
@@ -839,10 +876,10 @@ class ShopGameFrame(ttk.Frame):
 
         self.cart_icon = Label(self.game_frame, bg=act_dark)
 
-        if game.price == 0:
+        if game.discounted_price == 0:
             price_str = "Free to play"
         else:
-            price_str = str(game.price) + "€"
+            price_str = str(game.discounted_price) + "€"
         self.price_tag = ttk.Label(
             self.game_frame, text=price_str, style="PriceTag.TLabel", background=act_dark, foreground="white")
 

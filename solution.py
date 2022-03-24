@@ -9,7 +9,8 @@ def add_game_to_cart(games_in_cart, game_to_add):
 
 
 def remove_game_from_cart(games_in_cart, game_to_remove):
-    return games_in_cart.remove(game_to_remove)  # TODO: Siehe add_game_to_cart return is None
+    games_in_cart.remove(game_to_remove)
+    return games_in_cart
 
 
 def calculate_price_with_discount(game_price, discounted):
@@ -21,7 +22,9 @@ def calculate_price_with_discount(game_price, discounted):
         elif game_price > 50:
             actual_price = game_price * 0.5
 
-    return round(actual_price, 2)
+        return round(actual_price, 2)
+    else:
+        return game_price
 
 
 def calculate_total_cart_price(prices):
