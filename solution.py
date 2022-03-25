@@ -79,29 +79,53 @@ def calculate_total_cart_price(prices):
 
 def enough_balance(cart_price, account_balance):
     """
-
-    :param cart_price:
-    :param account_balance:
-    :return:
+    Diese Funktion soll prüfen, ob genug Guthaben (account_balance) auf dem Konto ist, um die Inhalte des Warenkorbs mit
+    Gesamtpreis cart_price zu kaufen. Zurückgegeben werden soll ein Wahrheitswert (bool), ob das Geld ausreicht.
+    :param cart_price: Gesamtpreis der Spiele im Warenkorb als float.
+    :param account_balance: Guthaben, das zur Verfügung steht als float.
+    :return: Bool, ob das Guthaben ausreicht um die Spiele zu kaufen.
     """
     return cart_price <= account_balance
 
 
 def pay(cart_price, account_balance):
+    """
+    In dieser Funktion wird der Warenkorb bezahlt. Dazu werden der Gesamtpreis (cart_price) und das Guthaben
+    (account_balance) in der Berechnung verwendet. Es soll das Guthaben berechnet werden, das nach dem Kauf übrig
+    bleibt.
+    :param cart_price: Gesamtwert der Spiele im Warenkorb.
+    :param account_balance: Guthaben, das zur Verfügung steht.
+    :return: Auf zwei Nachkommastellen gerundetes, übrig gebliebenes Guthaben nach dem Kauf.
+    """
     return round(account_balance - cart_price, 2)
 
 
 def playtime_from_seconds(seconds):
+    """
+    Die Spielzeit wird in Sekunden übergeben (seconds) und muss in Stunden, Minuten und Sekunden umgerechnet werden.
+    Hierbei lässt es sich nicht empfehlen die Minutenvariable "min" zu nennen, da dies ein eingebauter Name in Python
+    ist.
+    Tipp: Eine Stunde hat 3600 Sekunden und Modulorechnung (%-Operator) ist nützlich. Alternativ kann man auch die
+    Ganzzahldivision (//-Operator) verwenden.
+    :param seconds: Spielzeit in Sekunden als int.
+    :return: Dreiertupel oder Liste der Form h, m, s (Stunden, Minuten, Sekunden) - in einem return-Statement. Hierbei
+    sollen alle Werte des Typs int sein also keine Nachkommastellen haben.
+    """
     h = round(seconds / 3600)
     secs_left = seconds % 3600
     # TODO: Studenten warnen, dass "min" eine eingebaute Funktion ist und kein geeigneter Variablenname.
     m = round(secs_left / 60)
     s = secs_left % 60
 
-    return h, m, s
+    return [h, m, s]
 
 
 def total_library_value(prices):
+    """
+    Es soll der Gesamtwert der besessenen Spiele berechnet werden.
+    :param prices: Eine Liste der einzelnen Preise.
+    :return: Ein auf zwei Nachkommastellen gerundeter Gesamtwert aller Spiele im Besitz des Nutzers.
+    """
     total_value = 0
     for price in prices:
         total_value += price
@@ -109,6 +133,6 @@ def total_library_value(prices):
 
 
 if __name__ == 'main':
-    # TODO: Falls Diese Datei (z.B. zum Testen) ausgeführt werden soll, muss der Code hier geschrieben werden. Ansonsten
+    # TODO: Falls diese Datei (z.B. zum Testen) ausgeführt werden soll, muss der Code hier geschrieben werden. Ansonsten
     #  wird er auch beim Importieren der Datei ausgeführt.
     pass
