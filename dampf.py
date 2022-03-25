@@ -313,6 +313,10 @@ class Dampf:
                                    ["Windows", "Linux", "Mac"], img="forest", handle="Forest", price=16.79,
                                    playtime=234842, owned=True))
 
+        self.all_games.append(Game("Erscheinungsangst", ["Horror", "Rätsel"],
+                                   ["Windows", "Linux", "Mac"], img="phasmo", handle="Phasmo", price=11.59,
+                                   playtime=23842, owned=False))
+
         self.mainframe = Frame(master=self.master, bg=pas_dark)
         self.mainframe.rowconfigure(0, weight=1)  # Top bar
         self.mainframe.rowconfigure(1, weight=29)  # Shop Listing & Cart
