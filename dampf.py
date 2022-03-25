@@ -140,24 +140,45 @@ def get_total_playtime_str():
 
 
 def time_to_str(playtime):
-    h = playtime // 3600
-    # TODO hier Fabians Methode mit Modulo nehmen
-    mn = round(((playtime / 3600) - h) * 60)
-    sec = round(((((playtime / 3600) - h) * 60) - mn) * 60)
-    # TODO: Fabian hat noch Tage dazu gemacht.
-    #  Aber bei steam eig nicht
+    h, m, s = sol.playtime_from_seconds(playtime)
+    if h is None or m is None or s is None:
+        print_error("Keinen Rückgabewert erhalten (None).\nBeim Umrechnen der Spielzeit wurde nichts" +
+                    " per return übergeben.")
+    elif not isinstance(h, int) or not isinstance(m, int) or not isinstance(s, int):
+        print_error("Die Zeiten müssen als Ganzzahlen (int) übergeben werden.")
+    elif h < 0:
+        print_error("Die Stunden können nicht negativ sein.")
+    elif m < 0:
+        print_error("Die Minuten können nicht negativ sein.")
+    elif s < 0:
+        print_error("Die Sekunden können nicht negativ sein.")
+    elif m >= 60:
+        print_error("Die Minutenzahl kann maximal 59 sein.")
+    elif s >= 60:
+        print_error("Die Sekundenzahl kann maximal 59 sein.")
 
-    return str(h) + "h " + str(mn) + "m " + str(sec) + "s"
+    return str(h) + "h " + str(m) + "m " + str(s) + "s"
 
 
 def get_total_value_str():
     if dampf is None:
         return "Keine"
     else:
-        total_value = 0
+        prices = []
         for game in dampf.all_games:
             if game.owned:
-                total_value += game.price
+                prices.append(game.price)
+        total_value = sol.total_library_value(prices)
+        if total_value is None:
+            print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des Gesamtwerts gab es kein"
+                        " return.")
+        elif not isinstance(total_value, float) and total_value != 0:
+            print_error("Der Gesamtwert muss als Gleitkommazahl (float) übergeben werden.")
+        elif total_value < 0:
+            print_error("Der Gesamtwert kann nicht negativ sein.")
+        elif total_value != round(total_value, 2):
+            print_error("Der Gesamtwert sollte auf zwei Nachkommastellen gerundet sein.")
+
         return str(round(total_value, 2)) + "€"
 
 
@@ -168,7 +189,7 @@ def refund(event, g):
     # else:
     # print("Returning")
     g.owned = False
-    sol_new_balance = sol.add_to_balance(old_balance=dampf.balance, amount=g.price)
+    sol_new_balance = sol.add_to_balance(old_balance=dampf.balance, amount=g.discounted_price)
     if not sol_new_balance:
         print_error("Keinen Rückgabewert erhalten (None).\nBeim Aufladen des Guthabens wurde kein neues" +
                     " Guthaben per return übergeben.")
@@ -563,21 +584,6 @@ class Dampf:
             self.open_funds(event)
 
     def refresh_shop(self, sorted_sg=None):
-        # shop_games = []
-        # cart_games = []
-        # if not sorted_sg:
-        # for game in self.all_games:
-        #     if game.in_cart:
-        #         cart_games.append(game)
-        #         if not game.owned:
-        #             shop_games.append(game)
-        # else:
-        #     shop_games = sorted_sg  # .copy()
-        #     cart_games = []
-        #     for game in self.all_games:
-        #         if game.in_cart:
-        #             cart_games.append(game)
-
         for game_frame in self.shop_game_frames:
             game_frame.grid_forget()
         for sg in self.shop_items:
@@ -848,6 +854,13 @@ def game_str(platforms):
     return ret
 
 
+def strikethrough(st):
+    ret = ''
+    for char in st:
+        ret = ret + char + '\u0336'
+    return ret
+
+
 class ShopGameFrame(ttk.Frame):
     def __init__(self, container, game, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
@@ -895,7 +908,11 @@ class ShopGameFrame(ttk.Frame):
         if game.discounted_price == 0:
             price_str = "Free to play"
         else:
-            price_str = str(game.discounted_price) + "€"
+            if game.discounted:
+                price_str = strikethrough(str(game.price)) + "  "
+            else:
+                price_str = ""
+            price_str += str(game.discounted_price) + "€"
         self.price_tag = ttk.Label(
             self.game_frame, text=price_str, style="PriceTag.TLabel", background=act_dark, foreground="white")
 
