@@ -133,6 +133,8 @@ def total_library_value(prices):
 
 
 if __name__ == 'main':
-    # TODO: Falls diese Datei (z.B. zum Testen) ausgeführt werden soll, muss der Code hier geschrieben werden. Ansonsten
-    #  wird er auch beim Importieren der Datei ausgeführt.
+    # TODO: Zum Ausführen dampf.py starten. Für Hinweise auf die Konsolenausgaben achten.
+    #  Falls diese Datei (z.B. zum Testen) ausgeführt werden soll, muss der Code hierher geschrieben werden. Falls Code
+    #  außerhalb dieses if-statements steht (abgesehen von Klassen-/Methoden-/Funktionendeklarationen), wird er auch
+    #  beim Importieren der Datei (und damit beim Starten von dampf.py) ausgeführt.
     pass
