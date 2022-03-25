@@ -1,33 +1,76 @@
-# TODO: Kommentare und erwartete Ergebnisse aufschreiben + Leere Lösung
+def set_username():
+    """
+    Setzt den Benutzernamen in der Top-Bar.
+    :return: String, der den Namen enthält.
+    """
+    return "Student"  # Hier den Namen einfüllen
+
+
 def add_to_balance(old_balance, amount):
-    return old_balance + amount
+    """
+    Hier wird das vorhandene Guthaben (old_balance) um den Betrag (amount) aufgeladen. Das ergebnis soll auf zwei
+    Nachkommastellen gerundet werden.
+    In allen folgenden Methoden ist das Runden auf zwei Nachkommastellen wichtig, da ansonsten ein floating point error
+    für viele Nachkommastellen sorgen kann, welche als Geldbetrag keinen Sinn machen.
+    :param old_balance: Vorhandenes (altes) Guthaben.
+    :param amount: Betrag, der aufgeladen wird.
+    :return: Gerundeter Gesamtbetrag.
+    """
+    return round(old_balance + amount, 2)
 
 
 def add_game_to_cart(games_in_cart, game_to_add):
+    """
+    Ein Spiel (game_to_add) soll den Spielen, die sich bereits im Warenkorb befinden (games_in_cart), hinzugefügt
+    werden.
+    :param games_in_cart: Liste von Spielen, die bereits im Warenkorb sind.
+    :param game_to_add: Spiel, das hinzugefügt werden soll.
+    :return: Eine Liste, welche sowohl die alten als auch das neu hinzugefügt Spiel beinhaltet.
+    """
     games_in_cart.append(game_to_add)
     return games_in_cart
 
 
 def remove_game_from_cart(games_in_cart, game_to_remove):
+    """
+    Aus der Liste der Spiele im Warenkorb (games_in_cart) soll ein Spiel (game_to_remove) entfernt werden.
+    :param games_in_cart: Liste von Spielen, die bereits im Warenkorb sind.
+    :param game_to_remove: Spiel, das entfernt werden soll.
+    :return: Eine Liste, welche abgesehen vom Spiel (game_to_remove) die selben Elemente beinhalten soll.
+    """
     games_in_cart.remove(game_to_remove)
     return games_in_cart
 
 
 def calculate_price_with_discount(game_price, discounted):
+    """
+    Für Spiele, welche rabattiert sind (discounted = True), soll aus dem alten Preis (game_price) der neue Preis
+    berechnet werden.
+    Für bestimmte Preisklassen gibt es fixe Rabattprozentzahlen.
+    Auf Spiele, die unter 20€ kosten gibt es 10% Rabatt, unter 50€ 25% Rabatt und Spiele ab 50€ kosten die Hälfte.
+    :param game_price: Voller Spielpreis in Euro (float).
+    :param discounted: Bool, welcher angibt, ob Rabatt auf ein Spiel gerechnet werden muss. discounted = True heißt
+    auf das Spiel gibt es Rabatt.
+    :return: Der neue und eventuell verringerte Preis in Euro als float und auf zwei Nachkommastellen gerundet.
+    """
     if discounted:
         if game_price < 20:
             actual_price = game_price * 0.9
-        elif game_price <= 50:
+        elif game_price < 50:
             actual_price = game_price * 0.75
-        elif game_price > 50:
+        else:  # == elif game_price > 50:
             actual_price = game_price * 0.5
-
         return round(actual_price, 2)
     else:
         return game_price
 
 
 def calculate_total_cart_price(prices):
+    """
+    Der Gesamtwert des Warenkorbs soll durch die einzelnen Preise der im Warenkorb befindlichen Spiele errechnet werden.
+    :param prices: Liste mit Preisen der einzelnen Spiele.
+    :return: Gesamtpreis als float auf zwei Nachkommastellen gerundet.
+    """
     total_sum = 0
     for price in prices:
         total_sum += price
@@ -35,6 +78,12 @@ def calculate_total_cart_price(prices):
 
 
 def enough_balance(cart_price, account_balance):
+    """
+
+    :param cart_price:
+    :param account_balance:
+    :return:
+    """
     return cart_price <= account_balance
 
 
@@ -60,6 +109,6 @@ def total_library_value(prices):
 
 
 if __name__ == 'main':
+    # TODO: Falls Diese Datei (z.B. zum Testen) ausgeführt werden soll, muss der Code hier geschrieben werden. Ansonsten
+    #  wird er auch beim Importieren der Datei ausgeführt.
     pass
-
-

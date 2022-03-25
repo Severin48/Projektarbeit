@@ -1,3 +1,4 @@
+# Projektarbeit von Severin Hotz - WS2021/22
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
@@ -196,6 +197,8 @@ def refund(event, g):
     elif not isinstance(sol_new_balance, float):
         print_error("Das Guthaben muss als Gleitkommazahl (float) angegeben werden, um die Centbeträge anzeigen zu " +
                     "können.")
+    elif sol_new_balance != round(sol_new_balance, 2):
+        print_error("Das Guthaben soll auf zwei Nachkommastellen gerundet sein.")
     elif sol_new_balance < 0:
         print_error("Das Guthaben ist negativ geworden.")
     elif sol_new_balance < dampf.balance:
@@ -349,7 +352,11 @@ class Dampf:
 
         self.fr_profile_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_profile_label.grid(row=0, column=3, sticky="E", padx=5, pady=5)
-        self.profile_label = ttk.Label(self.fr_profile_label, text="S1mple")
+        if sol.set_username():
+            username = sol.set_username()
+        else:
+            username = "syrsoN"
+        self.profile_label = ttk.Label(self.fr_profile_label, text=username)
         self.profile_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
 
         self.fr_balance_label = Frame(master=self.top_bar, bg=pas_dark)
