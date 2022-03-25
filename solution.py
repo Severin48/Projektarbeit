@@ -39,7 +39,7 @@ def enough_balance(cart_price, account_balance):
 
 
 def pay(cart_price, account_balance):
-    return account_balance - cart_price
+    return round(account_balance - cart_price, 2)
 
 
 def playtime_from_seconds(seconds):

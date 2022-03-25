@@ -534,14 +534,30 @@ class Dampf:
 
     def buy_cart(self, event):
         price_sum = self.get_total_cart_price()
-        if self.balance >= price_sum:
+        sol_enough_balance = sol.enough_balance(cart_price=price_sum, account_balance=self.balance)
+        if sol_enough_balance is None:
+            print_error("Keinen Rückgabewert erhalten (None).\nBeim Bestimmen, ob genug Guthaben vorhanden ist,"
+                        " ist kein Wert per return zurückgegeben worden.")
+        elif not isinstance(sol_enough_balance, bool):
+            print_error("Der Preis muss als Wahrheitswert (bool) übergeben werden.")
+        if sol_enough_balance:
             for g in self.all_games:
                 if g.in_cart:
                     g.in_cart = False
                     remove_from_cart(None, g)
                     g.owned = True
                     self.shop_items.remove(g)
-            self.balance -= price_sum
+            sol_new_balance = sol.pay(cart_price=price_sum, account_balance=self.balance)
+            if sol_new_balance is None:
+                print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des neuen Guthabens gab es keinen"
+                            " Rückgabewert (return).")
+            elif not isinstance(sol_new_balance, float) and sol_new_balance != 0:
+                print_error("Das neue Guthaben muss als Gleitkommazahl (float) übergeben werden.")
+            elif sol_new_balance < 0:
+                print_error("Das Guthaben kann nicht negativ sein.")
+            elif sol_new_balance != round(sol_new_balance, 2):
+                print_error("Das Guthaben sollte auf zwei Nachkommastellen gerundet sein.")
+            self.balance = sol_new_balance
             self.refresh_shop()
         else:
             self.open_funds(event)
