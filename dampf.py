@@ -1,10 +1,18 @@
 # Projektarbeit von Severin Hotz - WS2021/22
+import os
+import sys
+
+# Add libs directory to module search path
+parent_dir = os.path.abspath(os.path.dirname(__file__))
+libs_dir = os.path.join(parent_dir, 'libs')
+
+sys.path.append(libs_dir)
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
-import sys
 
 import student_solution
 using_student_solution = student_solution.use_solution()
