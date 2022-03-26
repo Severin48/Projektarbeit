@@ -18,6 +18,8 @@ def add_to_balance(old_balance, amount):
     Nachkommastellen gerundet werden.
     In allen folgenden Methoden ist das Runden auf zwei Nachkommastellen wichtig, da ansonsten ein floating point error
     für viele Nachkommastellen sorgen kann, welche als Geldbetrag keinen Sinn machen.
+    Die Seite, auf der man das Guthaben aufladen kann erscheint, wenn man zu wenig Guthaben für den Kauf hat oder beim
+    Klicken auf den Betrag oben rechts.
     :param old_balance: Vorhandenes (altes) Guthaben.
     :param amount: Betrag, der aufgeladen wird.
     :return: Gerundeter Gesamtbetrag.

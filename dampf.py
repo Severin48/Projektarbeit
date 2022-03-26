@@ -15,28 +15,22 @@ else:
     import solution as sol
 
 
-width = 1200  # 900, 720
-height = 700  # 600, 512
+width = 1200
+height = 700
 small = height / 20
 
 act_dark = "#2d384b"
 pas_dark = "#1f232a"
-
-# TODO: Typing
 
 dampf = None
 root = None
 
 
 def init():
-    # root = Tk()
     global root
     root = ThemedTk()
     style = ttk.Style()
     style.theme_use('clam')
-    # print(style.theme_names())
-    # style.configure("C.TButton", foreground="white", background="black", relief="groove")
-    # style.configure("TButton", foreground="green", background="black")
     style.configure("TB.TLabel", foreground="white",
                     background=pas_dark, anchor="center", font=('arial', 20))
     style.configure(root, background=pas_dark, foreground="white")
@@ -54,15 +48,10 @@ def init():
 
     global dampf
     dampf = Dampf(root, style)
-    # canvas = Canvas(root, width=width, height=height)
-    # canvas.grid()
-    # canvas.grid(columnspan=3)
-    # root.resizable(False, False) TODO: Wieder einsetzen?
     win_size = str(width) + "x" + str(height)
     root.geometry(win_size)
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
-    # root.grid_propagate(0) TODO: Wieder einsetzen?
 
     root.mainloop()
 
@@ -79,7 +68,6 @@ def print_error(msg):
 
 
 def add_to_cart(event, game):
-    # print("Adding to cart: ", game.handle)
     old_len = len(dampf.cart_games)
     sol_cart_games = sol.add_game_to_cart(games_in_cart=dampf.cart_games, game_to_add=game)
     if not sol_cart_games:
@@ -185,11 +173,6 @@ def get_total_value_str():
 
 
 def refund(event, g):
-    # if g.playtime > 3600*2:  # 2h
-    #     # TODO: Popup refund nicht möglich weil mehr als 2h Spielzeit
-    #     pass
-    # else:
-    # print("Returning")
     g.owned = False
     sol_new_balance = sol.add_to_balance(old_balance=dampf.balance, amount=g.discounted_price)
     if not sol_new_balance:
@@ -206,7 +189,6 @@ def refund(event, g):
         print_error("Das Guthaben wurde nicht aufgeladen und ist stattdessen kleiner geworden.")
     else:
         dampf.balance = sol_new_balance
-    # dampf.balance += g.price
     dampf.shop_items.append(g)
     dampf.refresh_shop()
     dampf.refresh_lib()
@@ -221,7 +203,6 @@ def sort_frames(page, by):
             if not sg.owned:
                 shop_games.append(sg)
         if by == "name":
-            # 1. Sort Frames 2. Loop through sorted list and put onto grid - sorted list comes from students
             ret = sorted(shop_games, key=lambda g: g.name)
         elif by == "price":
             ret = sorted(shop_games, key=lambda g: g.price)
@@ -242,7 +223,6 @@ def sort_frames(page, by):
 
 
 class Game:
-    # TODO: Doc welche Einheiten/Typen z.B. Playtime in Sekunden
     def __init__(self, name, genre, platforms, img, handle, owned=False, discounted=False, price=0, playtime=0):
         self.name = name
         self.price = price
@@ -280,10 +260,10 @@ class Game:
 
 
 class Dampf:
-    def __init__(self, master, style):  # , balance):
+    def __init__(self, master, style):
         self.master = master
         self.style = style
-        self.balance = 0  # alt: = balance
+        self.balance = 0
         master.title("Dampf")
         self.showing = ""
         self.all_games = []
@@ -397,11 +377,11 @@ class Dampf:
                                                 style="Sorting.TLabel")
         self.sort_lib_by_name_label.bind("<Button-1>", self.sort_lib_by_name)
 
-        self.game_library_frame = ScrollableFrame(container=self.lib_page)
+        self.game_library_frame = ScrollFrame(container=self.lib_page)
 
         for game in self.all_games:
             temp_frame = LibGameFrame(
-                container=self.game_library_frame.scrollable_frame, game=game)
+                container=self.game_library_frame.scroll_frame, game=game)
             self.lib_game_frames.append(temp_frame)
 
         self.l_total_value = ttk.Label(
@@ -426,9 +406,7 @@ class Dampf:
         self.fr_add_fifty = Frame(master=self.funds_frame, bg=act_dark)
         self.fr_add_hundred = Frame(master=self.funds_frame, bg=act_dark)
 
-        # TODO: Padding dazwischen
-
-        self.desc_five = ttk.Label(self.fr_add_five, text="5,--€",  # \nMinimaler Aufladebetrag
+        self.desc_five = ttk.Label(self.fr_add_five, text="5,--€",
                                    style="FundsAmount.TLabel")
 
         self.desc_ten = ttk.Label(self.fr_add_ten, text="10,--€",
@@ -486,12 +464,11 @@ class Dampf:
 
         self.sorting_bar_sh = Frame(master=self.shop_page, bg=pas_dark)
 
-        # TODO: Scrollable mit mousewheel machen
-        self.game_listings_frame = ScrollableFrame(container=self.shop_page)
+        self.game_listings_frame = ScrollFrame(container=self.shop_page)
 
         for game in self.all_games:
             temp_frame = ShopGameFrame(
-                container=self.game_listings_frame.scrollable_frame, game=game)
+                container=self.game_listings_frame.scroll_frame, game=game)
             self.shop_game_frames.append(temp_frame)
 
         self.sort_by_price_label = ttk.Label(self.sorting_bar_sh, text="Sortieren nach Preis", width=20,
@@ -532,11 +509,6 @@ class Dampf:
         self.l_buy_cart = ttk.Label(
             self.fr_cart, text="Kaufen", background="green")
         self.l_buy_cart.bind("<Button-1>", self.buy_cart)
-
-        # https://stackoverflow.com/questions/29091747/set-tkinter-label-texts-as-elements-of-list
-        # TODO: Oder eine feste Menge (8) Labels, deren Texte nach einer Liste an Games im cart geändert werden.
-        #  Wenn mehr als 8 Spiele im Cart sind, werden zwei Buttons sichtbar, mit denen man die Seiten browsen kann.
-        #  Oder einfach leicht machen und mehr als genug Labels machen und nur manche davon befüllen.
 
         self.open_shop(event=None)  # Show the shop on launch
 
@@ -674,7 +646,7 @@ class Dampf:
                 if game.owned:
                     lib_games.append(game)
         else:
-            lib_games = sorted_lg  # .copy()
+            lib_games = sorted_lg
 
         for game_frame in self.lib_game_frames:
             game_frame.grid_forget()
@@ -713,14 +685,11 @@ class Dampf:
 
         self.showing = "lib"
 
-        # print("Opening library")
-
     def open_funds(self, event):
         self.shop_page.grid_forget()
         self.lib_page.grid_forget()
         self.shop_label.configure(font=('arial', 20))
         self.lib_label.configure(font=('arial', 20))
-        # self.top_bar.grid_rowconfigure(rowspan=2) # TODO: Top bar shouldn't resize when clicking on funds and back
 
         self.funds_frame.grid(row=1, column=0, sticky="wens")
         self.fr_add_five.grid(row=0, column=0, sticky="wens")
@@ -761,43 +730,31 @@ class Dampf:
         self.balance_value_label.grid(padx=10, pady=10)
         self.balance_value_label.place(anchor="c", relx=.5, rely=.5)
 
-        # TODO: Funds aktualisieren wenn sie sich ändern
-        # TODO: Erklärung schreiben z.B. zum Aufladen von Guthaben auf den Betrag rechts oben klicken
-
         self.showing = "funds"
 
     def add_funds(self, event, amount):
-        # TODO: von Studierenden zu implementieren
         self.balance = round(self.balance + amount, 2)
-        # print("Guthaben müsste {},--€ aufgeladen werden".format(amount))
         new_amount_str = str(self.balance) + "€"
         self.balance_value_label["text"] = new_amount_str
         self.balance_label["text"] = new_amount_str
 
     def get_balance(self):
-        # balance = 1.60384572
         self.balance = round(self.balance, 2)
-        return '{:.2f}'.format(self.balance)
-
-    def open_login(self, event):
-        print("Opening login screen")
+        return self.balance
 
     def sort_by_price(self, event):
-        # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
         print("Nach Preis Sortieren")
         sort_frames("shop", "price")
         self.sort_by_price_label.grid_forget()
         self.sort_shop_by_name_label.grid()
 
     def sort_shop_by_name(self, event):
-        # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
         print("Nach Name Sortieren")
         sort_frames("shop", "name")
         self.sort_shop_by_name_label.grid_forget()
         self.sort_by_price_label.grid()
 
     def sort_lib_by_name(self, event):
-        # TODO: Hier gute Fehlermeldungen printen je nach Wert den man zurückbekommt oder je nach Error
         print("Nach Name Sortieren")
         sort_frames("lib", "name")
         self.sort_lib_by_name_label.grid_forget()
@@ -812,42 +769,32 @@ class Dampf:
     def get_shop_games(self):
         return self.shop_games
 
-    # def browse_game_listings(self):
-    #     # TODO: Mit event prüfen ob nach oben oder unten gescrollt wird?
-    #     pass
 
-
-class ScrollableFrame(ttk.Frame):
+class ScrollFrame(ttk.Frame):
     def __init__(self, container, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
         # TODO: Refactor
         self.canvas = tk.Canvas(self, bg=act_dark)
         self.scrollbar = ttk.Scrollbar(
             self, orient="vertical", command=self.canvas.yview)
-        self.scrollable_frame = Frame(self.canvas, bg=act_dark)
-        # self.canvas.columnconfigure(0, weight=1)
-        # self.canvas.rowconfigure(0, weight=1)
-        # self.scrollable_frame.columnconfigure(0, weight=1)
-        # self.scrollable_frame.rowconfigure(0, weight=1)
+        self.scroll_frame = Frame(self.canvas, bg=act_dark)
 
-        self.scrollable_frame.bind(
+        self.scroll_frame.bind(
             "<Configure>",
             lambda e: self.canvas.configure(
-                # Wird aufgerufen wenn sich Inhalte ändern --> scrollregion wird
                 scrollregion=self.canvas.bbox("all")
-                # aktualisiert
             )
         )
 
         self.canvas_frame = self.canvas.create_window(
-            (0, 0), window=self.scrollable_frame, anchor="nw")
+            (0, 0), window=self.scroll_frame, anchor="nw")
 
         self.canvas.configure(yscrollcommand=self.scrollbar.set)
 
         self.canvas.pack(side="left", fill="both", expand=True)
         self.scrollbar.pack(side="right", fill="y")
 
-        self.scrollable_frame.bind("<Configure>", self.on_frame_configure)
+        self.scroll_frame.bind("<Configure>", self.on_frame_configure)
         self.canvas.bind('<Configure>', self.frame_width)
 
     def frame_width(self, event):
@@ -886,7 +833,7 @@ class ShopGameFrame(ttk.Frame):
         self.game_frame = Frame(master=container, bg=act_dark)
 
         self.game_frame.columnconfigure(0, weight=1)  # Image
-        self.game_frame.columnconfigure(1, weight=1)  # Name, Platforms, Genre
+        self.game_frame.columnconfigure(1, weight=4)  # Name, Platforms, Genre
         self.game_frame.columnconfigure(2, weight=1)  # Discount tag if needed
         # Add/remove to/from cart Button
         self.game_frame.columnconfigure(3, weight=1)
@@ -898,9 +845,8 @@ class ShopGameFrame(ttk.Frame):
         self.img = ttk.Label(
             self.game_frame, image=game.img, background=act_dark)
 
-        self.fr_name = Frame()
         self.l_name = ttk.Label(
-            self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background="purple", width=26,
+            self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background=act_dark, width=26,
             justify="left")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
