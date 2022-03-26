@@ -6,7 +6,8 @@ from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
 import sys
 
-using_student_solution = False  # Wechsel zwischen Musterlösung und Studentenlösung
+import student_solution
+using_student_solution = student_solution.use_solution()
 
 if using_student_solution:
     import student_solution as sol
