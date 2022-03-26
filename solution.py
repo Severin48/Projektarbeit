@@ -115,7 +115,6 @@ def playtime_from_seconds(seconds):
     """
     h = round(seconds / 3600)
     secs_left = seconds % 3600
-    # TODO: Studenten warnen, dass "min" eine eingebaute Funktion ist und kein geeigneter Variablenname.
     m = round(secs_left / 60)
     s = secs_left % 60
 

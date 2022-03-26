@@ -256,9 +256,6 @@ class Game:
         return "Game_" + self.name
 
 
-# TODO: Wenn genug Funds vorhanden sind nicht auf AddFundsPage
-
-
 class Dampf:
     def __init__(self, master, style):
         self.master = master
@@ -312,7 +309,6 @@ class Dampf:
         self.top_bar.columnconfigure(4, weight=1)
         self.top_bar.rowconfigure(0, weight=1)
         self.top_bar.grid(row=0, column=0, sticky="WENS")
-        # TODO: Shop contents col=0, cart col=1 --> Analog bei Lib
 
         self.fr_shop_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_shop_label.grid(row=0, column=0, sticky="W", padx=5, pady=5)
@@ -773,7 +769,6 @@ class Dampf:
 class ScrollFrame(ttk.Frame):
     def __init__(self, container, *args, **kwargs):
         super().__init__(container, *args, **kwargs)
-        # TODO: Refactor
         self.canvas = tk.Canvas(self, bg=act_dark)
         self.scrollbar = ttk.Scrollbar(
             self, orient="vertical", command=self.canvas.yview)
