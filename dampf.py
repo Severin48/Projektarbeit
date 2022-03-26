@@ -897,8 +897,10 @@ class ShopGameFrame(ttk.Frame):
         self.img = ttk.Label(
             self.game_frame, image=game.img, background=act_dark)
 
+        self.fr_name = Frame()
         self.l_name = ttk.Label(
-            self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background=act_dark)
+            self.game_frame, text=game.name, style="GameName.TLabel", anchor="w", background="purple", width=26,
+            justify="left")
 
         self.l_platforms = ttk.Label(self.game_frame, text=game_str(game.platforms), style="GameDesc.TLabel",
                                      background=act_dark, anchor="w")
