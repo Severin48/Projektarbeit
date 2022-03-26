@@ -56,15 +56,16 @@ def init():
     root.mainloop()
 
 
-def print_error(msg):
+def print_error(msg, destroy=False):
     print("__________________________________________________________________________________________________")
     print("__________________________________________________________________________________________________")
     print("Warnung: " + msg)
     print("__________________________________________________________________________________________________")
     print("__________________________________________________________________________________________________")
     global root
-    root.destroy()
-    sys.exit()
+    if destroy:
+        root.destroy()
+        sys.exit()
 
 
 def add_to_cart(event, game):
@@ -81,19 +82,18 @@ def add_to_cart(event, game):
         print_error("Die Warenkorbliste hat zu viele Elemente.")
     else:
         dampf.cart_games = sol_cart_games
-    game.in_cart = True
-    gf = game.shop_game_frame
-    gf.cart_icon.configure(image=gf.remove_from_cart_icon)
-    gf.cart_icon.image = gf.remove_from_cart_icon
+        game.in_cart = True
+        gf = game.shop_game_frame
+        gf.cart_icon.configure(image=gf.remove_from_cart_icon)
+        gf.cart_icon.image = gf.remove_from_cart_icon
 
-    gf.cart_icon.bind("<Button-1>", lambda e,
-                      g=game: remove_from_cart(e, g))
+        gf.cart_icon.bind("<Button-1>", lambda e,
+                          g=game: remove_from_cart(e, g))
 
     dampf.refresh_shop()
 
 
 def remove_from_cart(event, game):
-    # print("Removing from cart: ", game.handle)
     old_len = len(dampf.cart_games)
     sol_cart_games = sol.remove_game_from_cart(games_in_cart=dampf.cart_games, game_to_remove=game)
     if not sol_cart_games and old_len != 1 and old_len != 0:
@@ -107,13 +107,13 @@ def remove_from_cart(event, game):
         print_error("Die Warenkorbliste hat zu wenige Elemente.")
     else:
         dampf.cart_games = sol_cart_games
-    game.in_cart = False
-    gf = game.shop_game_frame
-    gf.cart_icon.configure(image=gf.add_to_cart_icon)
-    gf.cart_icon.image = gf.add_to_cart_icon
+        game.in_cart = False
+        gf = game.shop_game_frame
+        gf.cart_icon.configure(image=gf.add_to_cart_icon)
+        gf.cart_icon.image = gf.add_to_cart_icon
 
-    gf.cart_icon.bind("<Button-1>", lambda e,
-                      g=game: add_to_cart(e, g))
+        gf.cart_icon.bind("<Button-1>", lambda e,
+                          g=game: add_to_cart(e, g))
 
     dampf.refresh_shop()
 
@@ -130,24 +130,26 @@ def get_total_playtime_str():
 
 
 def time_to_str(playtime):
-    h, m, s = sol.playtime_from_seconds(playtime)
-    if h is None or m is None or s is None:
-        print_error("Keinen Rückgabewert erhalten (None).\nBeim Umrechnen der Spielzeit wurde nichts" +
-                    " per return übergeben.")
-    elif not isinstance(h, int) or not isinstance(m, int) or not isinstance(s, int):
-        print_error("Die Zeiten müssen als Ganzzahlen (int) übergeben werden.")
-    elif h < 0:
-        print_error("Die Stunden können nicht negativ sein.")
-    elif m < 0:
-        print_error("Die Minuten können nicht negativ sein.")
-    elif s < 0:
-        print_error("Die Sekunden können nicht negativ sein.")
-    elif m >= 60:
-        print_error("Die Minutenzahl kann maximal 59 sein.")
-    elif s >= 60:
-        print_error("Die Sekundenzahl kann maximal 59 sein.")
-
-    return str(h) + "h " + str(m) + "m " + str(s) + "s"
+    if sol.playtime_from_seconds(playtime):
+        h, m, s = sol.playtime_from_seconds(playtime)
+        if h is None or m is None or s is None:
+            print_error("Keinen Rückgabewert erhalten (None).\nBeim Umrechnen der Spielzeit wurde nichts" +
+                        " per return übergeben.")
+        elif not isinstance(h, int) or not isinstance(m, int) or not isinstance(s, int):
+            print_error("Die Zeiten müssen als Ganzzahlen (int) übergeben werden.")
+        elif h < 0:
+            print_error("Die Stunden können nicht negativ sein.")
+        elif m < 0:
+            print_error("Die Minuten können nicht negativ sein.")
+        elif s < 0:
+            print_error("Die Sekunden können nicht negativ sein.")
+        elif m >= 60:
+            print_error("Die Minutenzahl kann maximal 59 sein.")
+        elif s >= 60:
+            print_error("Die Sekundenzahl kann maximal 59 sein.")
+        else:
+            return str(h) + "h " + str(m) + "m " + str(s) + "s"
+    return "ERROR"
 
 
 def get_total_value_str():
@@ -159,25 +161,29 @@ def get_total_value_str():
             if game.owned:
                 prices.append(game.price)
         total_value = sol.total_library_value(prices)
-        if total_value is None:
-            print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des Gesamtwerts gab es kein"
-                        " return.")
-        elif not isinstance(total_value, float) and total_value != 0:
-            print_error("Der Gesamtwert muss als Gleitkommazahl (float) übergeben werden.")
-        elif total_value < 0:
-            print_error("Der Gesamtwert kann nicht negativ sein.")
-        elif total_value != round(total_value, 2):
-            print_error("Der Gesamtwert sollte auf zwei Nachkommastellen gerundet sein.")
+        if total_value:
+            pass
+            if total_value is None:
+                print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des Gesamtwerts gab es kein"
+                            " return.")
+            elif not isinstance(total_value, float) and total_value != 0:
+                print_error("Der Gesamtwert muss als Gleitkommazahl (float) übergeben werden.")
+            elif total_value < 0:
+                print_error("Der Gesamtwert kann nicht negativ sein.")
+            elif total_value != round(total_value, 2):
+                print_error("Der Gesamtwert sollte auf zwei Nachkommastellen gerundet sein.")
 
-        return str(round(total_value, 2)) + "€"
+            return str(round(total_value, 2)) + "€"
+    return "ERROR"
 
 
 def refund(event, g):
     g.owned = False
     sol_new_balance = sol.add_to_balance(old_balance=dampf.balance, amount=g.discounted_price)
-    if not sol_new_balance:
+    if sol_new_balance is None:
         print_error("Keinen Rückgabewert erhalten (None).\nBeim Aufladen des Guthabens wurde kein neues" +
                     " Guthaben per return übergeben.")
+        dampf.balance = -1
     elif not isinstance(sol_new_balance, float):
         print_error("Das Guthaben muss als Gleitkommazahl (float) angegeben werden, um die Centbeträge anzeigen zu " +
                     "können.")
@@ -517,6 +523,7 @@ class Dampf:
         if total_cart_price is None:
             print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des rabattierten Preises gab es kein"
                         " return.")
+            total_cart_price = 0
         elif not isinstance(total_cart_price, float) and total_cart_price != 0:
             print_error("Der Preis muss als Gleitkommazahl (float) übergeben werden.")
         elif total_cart_price < 0:
@@ -538,7 +545,7 @@ class Dampf:
         sol_enough_balance = sol.enough_balance(cart_price=price_sum, account_balance=self.balance)
         if sol_enough_balance is None:
             print_error("Keinen Rückgabewert erhalten (None).\nBeim Bestimmen, ob genug Guthaben vorhanden ist,"
-                        " ist kein Wert per return zurückgegeben worden.")
+                        " ist kein Wert per return zurückgegeben worden.", destroy=True)
         elif not isinstance(sol_enough_balance, bool):
             print_error("Der Preis muss als Wahrheitswert (bool) übergeben werden.")
         if sol_enough_balance:
@@ -551,19 +558,20 @@ class Dampf:
             sol_new_balance = sol.pay(cart_price=price_sum, account_balance=self.balance)
             if sol_new_balance is None:
                 print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des neuen Guthabens gab es keinen"
-                            " Rückgabewert (return).")
+                            " Rückgabewert (return).", destroy=True)
             elif not isinstance(sol_new_balance, float) and sol_new_balance != 0:
                 print_error("Das neue Guthaben muss als Gleitkommazahl (float) übergeben werden.")
             elif sol_new_balance < 0:
                 print_error("Das Guthaben kann nicht negativ sein.")
             elif sol_new_balance != round(sol_new_balance, 2):
                 print_error("Das Guthaben sollte auf zwei Nachkommastellen gerundet sein.")
-            self.balance = sol_new_balance
+            else:
+                self.balance = sol_new_balance
             self.refresh_shop()
         else:
             self.open_funds(event)
 
-    def refresh_shop(self, sorted_sg=None):
+    def refresh_shop(self):
         for game_frame in self.shop_game_frames:
             game_frame.grid_forget()
         for sg in self.shop_items:
