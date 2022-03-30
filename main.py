@@ -4,6 +4,7 @@ from tkinter import ttk
 from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
+import sys
 
 import student_solution
 using_student_solution = student_solution.use_solution()

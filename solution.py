@@ -42,6 +42,13 @@ def remove_game_from_cart(games_in_cart, game_to_remove):
     """
     games_in_cart.remove(game_to_remove)
     return games_in_cart
+    # Alternative:
+    # new_games_in_cart = []
+    # for game in games_in_cart:
+    #     if game != game_to_remove:
+    #         new_games_in_cart.append(game)
+    #
+    # return new_games_in_cart
 
 
 def calculate_price_with_discount(game_price, discounted):
@@ -88,6 +95,11 @@ def enough_balance(cart_price, account_balance):
     :return: Bool, ob das Guthaben ausreicht um die Spiele zu kaufen.
     """
     return cart_price <= account_balance
+    # Alternative:
+    # if cart_price <= account_balance:
+    #     return True
+    # else:
+    #     return False
 
 
 def pay(cart_price, account_balance):
@@ -119,6 +131,13 @@ def playtime_from_seconds(seconds):
     s = secs_left % 60
 
     return [h, m, s]
+    # Alternative:
+    # h = seconds // 3600
+    # secs_left = seconds - 3600*h
+    # m = secs_left // 60
+    # s = secs_left - 60*m
+    #
+    # return [h, m, s]
 
 
 def total_library_value(prices):
@@ -134,8 +153,8 @@ def total_library_value(prices):
 
 
 if __name__ == 'main':
-    # TODO: Zum Ausführen dampf.py starten. Für Hinweise auf die Konsolenausgaben achten.
+    # TODO: Zum Ausführen main.py starten. Für Hinweise auf die Konsolenausgaben achten.
     #  Falls diese Datei (z.B. zum Testen) ausgeführt werden soll, muss der Code hierher geschrieben werden. Falls Code
     #  außerhalb dieses if-statements steht (abgesehen von Klassen-/Methoden-/Funktionendeklarationen), wird er auch
-    #  beim Importieren der Datei (und damit beim Starten von dampf.py) ausgeführt.
+    #  beim Importieren der Datei (und damit beim Starten von main.py) ausgeführt.
     pass
