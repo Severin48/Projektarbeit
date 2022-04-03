@@ -5,6 +5,7 @@ from tkinter import *
 from ttkthemes import ThemedTk
 from PIL import ImageTk, Image
 import sys
+import random
 
 import student_solution
 using_student_solution = student_solution.use_solution()
@@ -21,6 +22,8 @@ small = height / 20
 
 act_dark = "#2d384b"
 pas_dark = "#1f232a"
+dark_blue = "#4b6173"
+light_blue = "#67c1f5"
 
 dampf = None
 root = None
@@ -70,14 +73,17 @@ def print_error(msg, destroy=False):
 
 def add_to_cart(event, game):
     old_len = len(dampf.cart_games)
-    sol_cart_games = sol.add_game_to_cart(games_in_cart=dampf.cart_games, game_to_add=game)
+    sol_cart_games = sol.add_game_to_cart(
+        games_in_cart=dampf.cart_games, game_to_add=game)
     if not sol_cart_games:
         print_error("Keinen Rückgabewert erhalten (None).\nBeim Hinzufügen des Spiels zum Warenkorb wurde nichts" +
                     " per return übergeben.")
     elif not isinstance(sol_cart_games, list):
-        print_error("Der Warenkorb muss als Liste (list) übergeben werden, in der sich die Spiele befinden.")
+        print_error(
+            "Der Warenkorb muss als Liste (list) übergeben werden, in der sich die Spiele befinden.")
     elif len(sol_cart_games) < old_len:
-        print_error("Die Warenkorbliste hat ein oder mehrere Elemente verloren.")
+        print_error(
+            "Die Warenkorbliste hat ein oder mehrere Elemente verloren.")
     elif len(sol_cart_games) > old_len + 1:
         print_error("Die Warenkorbliste hat zu viele Elemente.")
     else:
@@ -95,12 +101,14 @@ def add_to_cart(event, game):
 
 def remove_from_cart(event, game):
     old_len = len(dampf.cart_games)
-    sol_cart_games = sol.remove_game_from_cart(games_in_cart=dampf.cart_games, game_to_remove=game)
+    sol_cart_games = sol.remove_game_from_cart(
+        games_in_cart=dampf.cart_games, game_to_remove=game)
     if not sol_cart_games and old_len != 1 and old_len != 0:
         print_error("Keinen Rückgabewert erhalten (None).\nBeim Entfernen des Spiels vom Warenkorb wurde nichts" +
                     " per return übergeben.")
     elif not isinstance(sol_cart_games, list):
-        print_error("Der Warenkorb muss als Liste (list) übergeben werden, in der sich die Spiele befinden.")
+        print_error(
+            "Der Warenkorb muss als Liste (list) übergeben werden, in der sich die Spiele befinden.")
     elif len(sol_cart_games) >= old_len:
         print_error("Die Warenkorbliste hat ein oder mehrere Elemente zu viel.")
     elif len(sol_cart_games) < old_len - 1:
@@ -136,7 +144,8 @@ def time_to_str(playtime):
             print_error("Keinen Rückgabewert erhalten (None).\nBeim Umrechnen der Spielzeit wurde nichts" +
                         " per return übergeben.")
         elif not isinstance(h, int) or not isinstance(m, int) or not isinstance(s, int):
-            print_error("Die Zeiten müssen als Ganzzahlen (int) übergeben werden.")
+            print_error(
+                "Die Zeiten müssen als Ganzzahlen (int) übergeben werden.")
         elif h < 0:
             print_error("Die Stunden können nicht negativ sein.")
         elif m < 0:
@@ -167,19 +176,26 @@ def get_total_value_str():
                 print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des Gesamtwerts gab es kein"
                             " return.")
             elif not isinstance(total_value, float) and total_value != 0:
-                print_error("Der Gesamtwert muss als Gleitkommazahl (float) übergeben werden.")
+                print_error(
+                    "Der Gesamtwert muss als Gleitkommazahl (float) übergeben werden.")
             elif total_value < 0:
                 print_error("Der Gesamtwert kann nicht negativ sein.")
             elif total_value != round(total_value, 2):
-                print_error("Der Gesamtwert sollte auf zwei Nachkommastellen gerundet sein.")
+                print_error(
+                    "Der Gesamtwert sollte auf zwei Nachkommastellen gerundet sein.")
 
             return str(round(total_value, 2)) + "€"
     return "ERROR"
 
 
+def gen_confirmation_code():
+    return '%08x' % random.randrange(16**8)  # 8-digit random hexadecimal
+
+
 def refund(event, g):
     g.owned = False
-    sol_new_balance = sol.add_to_balance(old_balance=dampf.balance, amount=g.discounted_price)
+    sol_new_balance = sol.add_to_balance(
+        old_balance=dampf.balance, amount=g.discounted_price)
     if sol_new_balance is None:
         print_error("Keinen Rückgabewert erhalten (None).\nBeim Aufladen des Guthabens wurde kein neues" +
                     " Guthaben per return übergeben.")
@@ -188,11 +204,13 @@ def refund(event, g):
         print_error("Das Guthaben muss als Gleitkommazahl (float) angegeben werden, um die Centbeträge anzeigen zu " +
                     "können.")
     elif sol_new_balance != round(sol_new_balance, 2):
-        print_error("Das Guthaben soll auf zwei Nachkommastellen gerundet sein.")
+        print_error(
+            "Das Guthaben soll auf zwei Nachkommastellen gerundet sein.")
     elif sol_new_balance < 0:
         print_error("Das Guthaben ist negativ geworden.")
     elif sol_new_balance < dampf.balance:
-        print_error("Das Guthaben wurde nicht aufgeladen und ist stattdessen kleiner geworden.")
+        print_error(
+            "Das Guthaben wurde nicht aufgeladen und ist stattdessen kleiner geworden.")
     else:
         dampf.balance = sol_new_balance
     dampf.shop_items.append(g)
@@ -245,18 +263,22 @@ class Game:
         self.shop_game_frame = None
         self.lib_game_frame = None
         self.full_price = price
-        self.discounted_price = sol.calculate_price_with_discount(game_price=self.full_price, discounted=discounted)
+        self.discounted_price = sol.calculate_price_with_discount(
+            game_price=self.full_price, discounted=discounted)
         if self.discounted_price is None:
             print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des rabattierten Preises gab es kein"
                         " return.")
         elif not isinstance(self.discounted_price, float) and self.discounted_price != 0:
-            print_error("Der Preis muss als Gleitkommazahl (float) übergeben werden.")
+            print_error(
+                "Der Preis muss als Gleitkommazahl (float) übergeben werden.")
         elif self.discounted_price > self.full_price:
-            print_error("Das Spiel ist durch den Rabatt teurer statt billiger geworden.")
+            print_error(
+                "Das Spiel ist durch den Rabatt teurer statt billiger geworden.")
         elif self.discounted_price < 0:
             print_error("Der Preis kann nicht negativ sein.")
         elif self.discounted_price != round(self.discounted_price, 2):
-            print_error("Der Preis sollte auf zwei Nachkommastellen gerundet sein.")
+            print_error(
+                "Der Preis sollte auf zwei Nachkommastellen gerundet sein.")
 
     def __repr__(self):
         return "Game_" + self.name
@@ -340,10 +362,11 @@ class Dampf:
         self.fr_profile_label = Frame(master=self.top_bar, bg=pas_dark)
         self.fr_profile_label.grid(row=0, column=3, sticky="E", padx=5, pady=5)
         if sol.set_username():
-            username = sol.set_username()
+            self.username = sol.set_username()
         else:
-            username = "syrsoN"
-        self.profile_label = ttk.Label(self.fr_profile_label, text=username)
+            self.username = "syrsoN"
+        self.profile_label = ttk.Label(
+            self.fr_profile_label, text=self.username)
         self.profile_label.grid(row=0, column=0, sticky="E", padx=5, pady=5)
 
         self.fr_balance_label = Frame(master=self.top_bar, bg=pas_dark)
@@ -397,16 +420,16 @@ class Dampf:
         style.configure("Addfds.TLabel", foreground="white",
                         background="green", anchor="center", font=('arial', 20))
 
-        self.funds_frame = Frame(master=self.mainframe, bg=pas_dark)
-        self.funds_frame.columnconfigure(0, weight=4)
-        self.funds_frame.columnconfigure(1, weight=1)
+        self.funds_page = Frame(master=self.mainframe, bg=pas_dark)
+        self.funds_page.columnconfigure(0, weight=4)
+        self.funds_page.columnconfigure(1, weight=1)
         for i in range(5):
-            self.funds_frame.rowconfigure(i, weight=1)
-        self.fr_add_five = Frame(master=self.funds_frame, bg=act_dark)
-        self.fr_add_ten = Frame(master=self.funds_frame, bg=act_dark)
-        self.fr_add_twentyfive = Frame(master=self.funds_frame, bg=act_dark)
-        self.fr_add_fifty = Frame(master=self.funds_frame, bg=act_dark)
-        self.fr_add_hundred = Frame(master=self.funds_frame, bg=act_dark)
+            self.funds_page.rowconfigure(i, weight=1)
+        self.fr_add_five = Frame(master=self.funds_page, bg=act_dark)
+        self.fr_add_ten = Frame(master=self.funds_page, bg=act_dark)
+        self.fr_add_twentyfive = Frame(master=self.funds_page, bg=act_dark)
+        self.fr_add_fifty = Frame(master=self.funds_page, bg=act_dark)
+        self.fr_add_hundred = Frame(master=self.funds_page, bg=act_dark)
 
         self.desc_five = ttk.Label(self.fr_add_five, text="5,--€",
                                    style="FundsAmount.TLabel")
@@ -448,13 +471,71 @@ class Dampf:
         self.add_hundred.bind("<Button-1>", lambda event,
                               x=100: self.add_funds(event, x))
 
-        self.fr_balance_big = Frame(master=self.funds_frame, bg=act_dark)
+        self.fr_balance_big = Frame(master=self.funds_page, bg=act_dark)
         self.balance_big = ttk.Label(self.fr_balance_big, text="Aktuelles Guthaben", style="TB.TLabel",
                                      background=act_dark)
 
         self.balance_value_label = ttk.Label(self.fr_balance_big, text=str(self.get_balance()) + "€", style="TB.TLabel",
                                              background=act_dark)
         self.balance_value_label.configure(font=("arial", 12))
+
+        # ====================================== RECEIPT PAGE ======================================
+
+        self.receipt_page = Frame(master=self.mainframe, bg=act_dark)
+        self.receipt_page.rowconfigure(0, weight=1)  # Info
+        self.receipt_page.rowconfigure(1, weight=1)  # Title
+        self.receipt_page.rowconfigure(2, weight=2)  # Infobox
+        self.receipt_page.rowconfigure(3, weight=1)  # Return to store button
+        self.receipt_page.columnconfigure(0, weight=5)  # Main section
+        self.receipt_page.columnconfigure(1, weight=5)  # Support section
+
+        self.receipt_info = "Ihr Guthaben ist sofort zur Nutzung verfügbar und" + \
+            " der Beleg wird Ihnen bald\nper E-Mail gesendet."
+        self.l_receipt_info = ttk.Label(self.receipt_page, text=self.receipt_info, style="TB.TLabel",
+                                        background=pas_dark)
+        self.l_receipt_info.configure(font=("arial", 12))
+        self.receipt_title = ttk.Label(self.receipt_page, text="IHR KAUFBELEG", style="TB.TLabel",
+                                       background=pas_dark, anchor="w")
+        self.fr_infobox = Frame(master=self.receipt_page, bg=pas_dark)
+        self.fr_infobox.rowconfigure(0, weight=1)  # l_infobox_info
+        self.fr_infobox.rowconfigure(1, weight=1)  # Account Name
+        self.fr_infobox.rowconfigure(2, weight=1)  # Total
+        self.fr_infobox.rowconfigure(3, weight=1)  # Confirmation code
+        # Account name, Total etc.
+        self.fr_infobox.columnconfigure(0, weight=1)
+        self.fr_infobox.columnconfigure(1, weight=1)  # Values
+        self.fr_infobox.columnconfigure(2, weight=1)  # l_infobox_info
+        self.l_infobox_info = ttk.Label(self.fr_infobox, text="Im unteren Bereich ist eine Bestätigung" +
+                                                              "ihres Kaufs zu finden. " +
+                                        "Die\nInformationen werden Ihnen auch in Kürze per E-Mail zugesandt.",
+                                        style="TB.TLabel", background=pas_dark)
+        self.l_infobox_info.configure(font=("arial", 12))
+        self.l_account_name = ttk.Label(self.fr_infobox, text="Account Name", style="TB.TLabel",
+                                        background=pas_dark, anchor="w")
+        self.l_account_name_value = ttk.Label(self.fr_infobox, text=self.username, style="TB.TLabel",
+                                              background=pas_dark)
+        self.l_total = ttk.Label(self.fr_infobox, text="Gesamtbetrag", style="TB.TLabel",
+                                 background=pas_dark)
+        self.l_total_value = ttk.Label(self.fr_infobox, text="0€", style="TB.TLabel",
+                                       background=pas_dark)
+        self.confirmation_code = ttk.Label(self.fr_infobox, text="Bestätigungscode", style="TB.TLabel",
+                                           background=pas_dark)
+        self.confirmation_code_value = ttk.Label(self.fr_infobox, text=gen_confirmation_code(), style="TB.TLabel",
+                                                 background=pas_dark)
+
+        self.l_support = ttk.Label(self.receipt_page, text="Für Hilfe oder Produktsupport," +
+                                   " besuchen Sie bitte den Steam\nSupport online.", style="TB.TLabel",
+                                   background=pas_dark)
+        self.l_support.configure(font=("arial", 12))
+
+        self.l_return_to_store = ttk.Label(
+            self.receipt_page, text="Zum Shop zurückkehren", style="TB.TLabel",
+            foreground=light_blue, background=dark_blue)
+        self.l_return_to_store.bind(
+            "<Button-1>", lambda event: self.open_shop(event))
+        # self.l_return_to_store.
+
+        # TODO: https://robots.net/how-to-guide/steam-wallet-how-to-add-funds-buy-games-and-more/
 
         # ====================================== SHOP PAGE ======================================
 
@@ -525,11 +606,13 @@ class Dampf:
                         " return.")
             total_cart_price = 0
         elif not isinstance(total_cart_price, float) and total_cart_price != 0:
-            print_error("Der Preis muss als Gleitkommazahl (float) übergeben werden.")
+            print_error(
+                "Der Preis muss als Gleitkommazahl (float) übergeben werden.")
         elif total_cart_price < 0:
             print_error("Der Preis kann nicht negativ sein.")
         elif total_cart_price != round(total_cart_price, 2):
-            print_error("Der Preis sollte auf zwei Nachkommastellen gerundet sein.")
+            print_error(
+                "Der Preis sollte auf zwei Nachkommastellen gerundet sein.")
 
         return total_cart_price
 
@@ -542,12 +625,14 @@ class Dampf:
 
     def buy_cart(self, event):
         price_sum = self.get_total_cart_price()
-        sol_enough_balance = sol.enough_balance(cart_price=price_sum, account_balance=self.balance)
+        sol_enough_balance = sol.enough_balance(
+            cart_price=price_sum, account_balance=self.balance)
         if sol_enough_balance is None:
             print_error("Keinen Rückgabewert erhalten (None).\nBeim Bestimmen, ob genug Guthaben vorhanden ist,"
                         " ist kein Wert per return zurückgegeben worden.", destroy=True)
         elif not isinstance(sol_enough_balance, bool):
-            print_error("Der Preis muss als Wahrheitswert (bool) übergeben werden.")
+            print_error(
+                "Der Preis muss als Wahrheitswert (bool) übergeben werden.")
         if sol_enough_balance:
             for g in self.all_games:
                 if g.in_cart:
@@ -555,16 +640,19 @@ class Dampf:
                     remove_from_cart(None, g)
                     g.owned = True
                     self.shop_items.remove(g)
-            sol_new_balance = sol.pay(cart_price=price_sum, account_balance=self.balance)
+            sol_new_balance = sol.pay(
+                cart_price=price_sum, account_balance=self.balance)
             if sol_new_balance is None:
                 print_error("Keinen Rückgabewert erhalten (None).\nBeim Berechnen des neuen Guthabens gab es keinen"
                             " Rückgabewert (return).", destroy=True)
             elif not isinstance(sol_new_balance, float) and sol_new_balance != 0:
-                print_error("Das neue Guthaben muss als Gleitkommazahl (float) übergeben werden.")
+                print_error(
+                    "Das neue Guthaben muss als Gleitkommazahl (float) übergeben werden.")
             elif sol_new_balance < 0:
                 print_error("Das Guthaben kann nicht negativ sein.")
             elif sol_new_balance != round(sol_new_balance, 2):
-                print_error("Das Guthaben sollte auf zwei Nachkommastellen gerundet sein.")
+                print_error(
+                    "Das Guthaben sollte auf zwei Nachkommastellen gerundet sein.")
             else:
                 self.balance = sol_new_balance
             self.refresh_shop()
@@ -621,7 +709,8 @@ class Dampf:
         self.lib_label.configure(font=('arial', 20))
 
         self.lib_page.grid_forget()
-        self.funds_frame.grid_forget()
+        self.funds_page.grid_forget()
+        self.receipt_page.grid_forget()
 
         self.shop_page.grid(row=1, column=0, sticky="wens")
 
@@ -664,7 +753,8 @@ class Dampf:
 
     def open_lib(self, event):
         self.shop_page.grid_forget()
-        self.funds_frame.grid_forget()
+        self.funds_page.grid_forget()
+        self.receipt_page.grid_forget()
         self.lib_label.configure(font=("arial", 20, "bold"))
         self.shop_label.configure(font=('arial', 20))
 
@@ -692,10 +782,11 @@ class Dampf:
     def open_funds(self, event):
         self.shop_page.grid_forget()
         self.lib_page.grid_forget()
+        self.receipt_page.grid_forget()
         self.shop_label.configure(font=('arial', 20))
         self.lib_label.configure(font=('arial', 20))
 
-        self.funds_frame.grid(row=1, column=0, sticky="wens")
+        self.funds_page.grid(row=1, column=0, sticky="wens")
         self.fr_add_five.grid(row=0, column=0, sticky="wens")
         self.fr_add_ten.grid(row=1, column=0, sticky="wens")
         self.fr_add_twentyfive.grid(row=2, column=0, sticky="wens")
@@ -741,10 +832,38 @@ class Dampf:
         new_amount_str = str(self.balance) + "€"
         self.balance_value_label["text"] = new_amount_str
         self.balance_label["text"] = new_amount_str
+        self.open_receipt(amount)
 
     def get_balance(self):
         self.balance = round(self.balance, 2)
         return self.balance
+
+    def open_receipt(self, amount):
+        self.shop_page.grid_forget()
+        self.lib_page.grid_forget()
+        self.funds_page.grid_forget()
+
+        self.receipt_page.grid(row=1, column=0, sticky="wens")
+
+        self.l_receipt_info.grid(row=0, column=0, sticky="w", padx=20)
+        self.receipt_title.grid(row=1, column=0, sticky="w", padx=20)
+        self.fr_infobox.grid(row=2, column=0, sticky="w", padx=20)
+        self.l_support.grid(row=0, column=1, sticky="w", padx=20)
+
+        self.l_infobox_info.grid(row=0, column=0, sticky="w", padx=10)
+        self.l_account_name.grid(row=1, column=0, sticky="w", padx=10)
+        self.l_total.grid(row=2, column=0, sticky="w", padx=10)
+        self.confirmation_code.grid(row=2, column=0, sticky="w", padx=10)
+
+        self.l_account_name_value.grid(row=1, column=1, sticky="w", padx=10)
+        self.l_total_value.grid(row=2, column=1, sticky="w", padx=10)
+        total_value = str(round(amount, 2))
+        self.l_total_value.configure(text=total_value)
+        self.confirmation_code_value.grid(row=2, column=1, sticky="w", padx=10)
+
+        self.l_return_to_store.grid(row=3, column=0, columnspan=2)
+
+        self.showing = "receipt"
 
     def sort_by_price(self, event):
         print("Nach Preis Sortieren")
