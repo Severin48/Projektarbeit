@@ -485,7 +485,8 @@ class Dampf:
         self.receipt_page.rowconfigure(0, weight=1)  # Info
         self.receipt_page.rowconfigure(1, weight=1)  # Title
         self.receipt_page.rowconfigure(2, weight=2)  # Infobox
-        self.receipt_page.rowconfigure(3, weight=1)  # Return to store button
+        self.receipt_page.rowconfigure(3, weight=4)  # Spacing
+        self.receipt_page.rowconfigure(4, weight=1)  # Return to store button
         self.receipt_page.columnconfigure(0, weight=5)  # Main section
         self.receipt_page.columnconfigure(1, weight=5)  # Support section
 
@@ -505,6 +506,7 @@ class Dampf:
         self.fr_infobox.columnconfigure(0, weight=1)
         self.fr_infobox.columnconfigure(1, weight=1)  # Values
         self.fr_infobox.columnconfigure(2, weight=1)  # l_infobox_info
+
         self.l_infobox_info = ttk.Label(self.fr_infobox, text="Im unteren Bereich ist eine Bestätigung" +
                                                               "ihres Kaufs zu finden. " +
                                         "Die\nInformationen werden Ihnen auch in Kürze per E-Mail zugesandt.",
@@ -527,6 +529,9 @@ class Dampf:
                                    " besuchen Sie bitte den Steam\nSupport online.", style="TB.TLabel",
                                    background=pas_dark)
         self.l_support.configure(font=("arial", 12))
+
+        self.receipt_space = ttk.Label(self.receipt_page, text="SPACING", style="TB.TLabel",
+                                   background=act_dark, foreground=act_dark)
 
         self.l_return_to_store = ttk.Label(
             self.receipt_page, text="Zum Shop zurückkehren", style="TB.TLabel",
@@ -861,7 +866,9 @@ class Dampf:
         self.l_total_value.configure(text=total_value)
         self.confirmation_code_value.grid(row=2, column=1, sticky="w", padx=10)
 
-        self.l_return_to_store.grid(row=3, column=0, columnspan=2)
+        self.receipt_space.grid(row=3, column=0)
+
+        self.l_return_to_store.grid(row=4, column=0, columnspan=2)
 
         self.showing = "receipt"
 
